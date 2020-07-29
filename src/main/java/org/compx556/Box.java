@@ -11,7 +11,7 @@ public class Box implements Cloneable {
         this.xLocation = xLocation;
     }
 
-    public void Rotate() {
+    public void rotate() {
         int oldWidth = width;
         width = height;
         height = oldWidth;
