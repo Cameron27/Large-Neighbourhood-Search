@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DestructionFunctions {
+    /**
+     * Removes a number of <code>Box</code> objects randomly from the solution.
+     */
     public static DestructionFunction randomNRemove = (list, n) -> {
         // create new lists
         BoxList remaining = list.clone();
