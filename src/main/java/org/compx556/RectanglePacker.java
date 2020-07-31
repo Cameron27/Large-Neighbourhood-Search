@@ -2,13 +2,13 @@ package org.compx556;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import org.compx556.function.DestructionFunction;
-import org.compx556.function.InitialisationFunction;
-import org.compx556.function.RepairFunction;
+import org.compx556.function.DestructionFunctions;
+import org.compx556.function.InitialisationFunctions;
+import org.compx556.function.RepairFunctions;
 
 public class RectanglePacker {
     public static void main(String[] args) {
-        Config config = new Config(InitialisationFunction.random, DestructionFunction.randomNRemove, RepairFunction.randomLocationOptimumX);
+        Config config = new Config(InitialisationFunctions.random, DestructionFunctions.randomNRemove, RepairFunctions.randomLocationOptimumX);
 
         JCommander builder = JCommander.newBuilder()
                 .addObject(config)
