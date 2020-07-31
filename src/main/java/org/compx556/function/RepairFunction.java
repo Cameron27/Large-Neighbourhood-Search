@@ -5,13 +5,16 @@ import org.compx556.BoxList;
 import org.compx556.util.GlobalRandom;
 import org.javatuples.Pair;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
 public interface RepairFunction extends Function<Pair<BoxList, List<Box>>, BoxList> {
     RepairFunction randomLocationOptimumX = input -> {
         BoxList list = input.getValue0().clone();
-        List<Box> missing = input.getValue1();
+        List<Box> missing = new ArrayList<>(input.getValue1());
+        Collections.shuffle(missing, GlobalRandom.getRnd());
 
         for (Box box : missing) {
             box = box.clone();
