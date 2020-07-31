@@ -22,6 +22,9 @@ public class Config {
     @Parameter(names = {"-s", "-seed"}, description = "Seed to use for randomness")
     public Integer seed;
 
+    @Parameter(names = {"-t", "-threads"}, description = "Number of threads to use")
+    public Integer threadCount = Runtime.getRuntime().availableProcessors();
+
     @Parameter(names = {"-h", "-help"}, help = true, hidden = true)
     public boolean help;
 

@@ -5,7 +5,7 @@ import org.compx556.BoxList;
 import org.javatuples.Pair;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
-public interface RepairFunction extends Function<Pair<BoxList, List<Box>>, BoxList> {
+public interface RepairFunction extends BiFunction<Pair<BoxList, List<Box>>, Integer, BoxList> {
 }
