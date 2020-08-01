@@ -23,8 +23,14 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
     public int calculateHeight() {
         int[] heights = new int[this.objectSize];
         for (Box b : this) {
-            for (int x = b.getXLocation(); x < b.getWidth() + b.getXLocation(); x++) {
-                heights[x] += b.getHeight();
+            int yLocation = 0;
+            for (int x = b.getXStart(); x < b.getXFinish(); x++) {
+                yLocation = Math.max(yLocation, heights[x]);
+            }
+
+            int boxHeight = yLocation + b.getHeight();
+            for (int x = b.getXStart(); x < b.getXFinish(); x++) {
+                heights[x] = boxHeight;
             }
         }
         int maxHeight = 0;

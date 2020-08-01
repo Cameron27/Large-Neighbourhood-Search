@@ -8,7 +8,13 @@ public class RectanglePacker {
     public static void main(String[] args) throws IOException {
 
         BoxList initialList = new BoxList(400);
-        File file  = new File("C:\\Users\\sivar\\Downloads\\COMPX556\\COMPX556Assignment1\\testData.csv");
+        if (args.length != 1) {
+            System.err.println("Usage: java RectanglePacker <filepath>");
+            System.exit(0);
+        }
+
+        String filepath = args[0];
+        File file  = new File(filepath);
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
 

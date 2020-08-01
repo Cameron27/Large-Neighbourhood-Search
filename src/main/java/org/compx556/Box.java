@@ -3,18 +3,21 @@ package org.compx556;
 public class Box implements Cloneable {
     private int width;
     private int height;
-    private int xLocation;
+    private int xStart;
+    private int xFinish;
 
-    public Box(int width, int height, int xLocation) {
+    public Box(int width, int height, int xStart) {
         this.width = width;
         this.height = height;
-        this.xLocation = xLocation;
+        this.xStart = xStart;
+        this.xFinish = this.xStart + this.width;
     }
 
     public void rotate() {
         int oldWidth = width;
-        width = height;
-        height = oldWidth;
+        this.width = height;
+        this.height = oldWidth;
+        this.xFinish = this.xStart + this.width;
     }
 
     public int getWidth() {
@@ -25,21 +28,26 @@ public class Box implements Cloneable {
         return this.height;
     }
 
-    public int getXLocation() {
-        return this.xLocation;
+    public int getXStart() {
+        return xStart;
     }
 
-    public void setXLocation(int xLocation) {
-        this.xLocation = xLocation;
+    public void setXStart(int xStart) {
+        this.xStart = xStart;
+        this.xFinish = this.xStart + this.width;
+    }
+
+    public int getXFinish() {
+        return xFinish;
     }
 
     @Override
     public String toString() {
-        return String.format("[w:%d,h:%d,x:%d]", width, height, xLocation);
+        return String.format("[w:%d,h:%d,x:%d]", width, height, xStart);
     }
 
     @Override
     public Box clone() {
-        return new Box(width, height, xLocation);
+        return new Box(width, height, xStart);
     }
 }
