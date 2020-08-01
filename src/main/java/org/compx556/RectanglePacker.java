@@ -1,20 +1,35 @@
 package org.compx556;
 
-import java.io.*;
-import java.util.Random;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+import org.compx556.function.DestructionFunctions;
+import org.compx556.function.InitialisationFunctions;
+import org.compx556.function.RepairFunctions;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.zip.DataFormatException;
 
 public class RectanglePacker {
+    private BoxList initialState;
 
-    public static void main(String[] args) throws IOException {
-
-        BoxList initialList = new BoxList(400);
-        if (args.length != 1) {
-            System.err.println("Usage: java RectanglePacker <filepath>");
-            System.exit(0);
+    public RectanglePacker(Config config) throws IOException, DataFormatException {
+        try {
+            initialState = parseDataFile(config.dataFile);
+        } catch (IndexOutOfBoundsException e) {
+            throw new DataFormatException("Format of the provided data file is incorrect.");
         }
+    }
 
-        String filepath = args[0];
-        File file  = new File(filepath);
+    public int solve() {
+        return 0;
+    }
+
+    private static BoxList parseDataFile(File file) throws IOException {
+        BoxList initialList = new BoxList(400);
+
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
 
@@ -22,31 +37,28 @@ public class RectanglePacker {
         boolean isBoxData = false;
         int size = 0;
 
-        Random rand = new Random();
-
         while (line != null) {
             String[] data = line.split(",");
-            if (isBoxData){
+            if (isBoxData) {
                 int numBox = Integer.parseInt(data[0]);
-                int xLocation = rand.nextInt(); // Placeholder
+                int xLocation = 0; // Placeholder
                 int width = Integer.parseInt(data[1]);
                 int height = Integer.parseInt(data[2]);
-                Box inputBox = new Box(width,height,xLocation);
+                Box inputBox = new Box(width, height, xLocation);
                 initialList.add(inputBox);
 
-                if(numBox == size){
+                if (numBox == size) {
                     isBoxData = false;
                 }
-            }
-            else{
-                if(line.contains("name:")){
+            } else {
+                if (line.contains("name:")) {
                     String name = data[2];
                     System.out.println(name);
                 }
-                if(line.contains("width")){
+                if (line.contains("width")) {
                     isBoxData = true;
                 }
-                if(line.contains("size")){
+                if (line.contains("size")) {
                     size = Integer.parseInt(data[2]);
                 }
             }
@@ -54,7 +66,40 @@ public class RectanglePacker {
 
         }
 
-        System.out.println(initialList.toString());
+        return initialList;
     }
 
+    public static void main(String[] args) {
+        Config config = new Config(InitialisationFunctions.random, DestructionFunctions.randomNRemove, RepairFunctions.randomLocationOptimumX);
+
+        JCommander builder = JCommander.newBuilder()
+                .addObject(config)
+                .build();
+        try {
+            builder.parse(args);
+        } catch (ParameterException e) {
+            System.out.println(e.getMessage());
+            e.usage();
+            return;
+        }
+        if (config.help) {
+            builder.usage();
+            return;
+        }
+
+        RectanglePacker rectanglePacker = null;
+        try {
+            rectanglePacker = new RectanglePacker(config);
+        } catch (IOException e) {
+            System.err.println("Failed to load data from file.");
+            return;
+        } catch (DataFormatException e) {
+            System.err.println("Data is formatted incorrectly.");
+            return;
+        }
+
+        int bestHeight = rectanglePacker.solve();
+
+        System.out.println("Best height: " + bestHeight);
+    }
 }

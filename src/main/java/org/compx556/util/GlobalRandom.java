@@ -16,4 +16,8 @@ public class GlobalRandom {
     public static int nextInt(int bound) {
         return rnd.nextInt(bound);
     }
+
+    public static Random getRnd() {
+        return rnd;
+    }
 }

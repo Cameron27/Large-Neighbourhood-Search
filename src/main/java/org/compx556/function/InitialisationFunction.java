@@ -1,26 +1,18 @@
 package org.compx556.function;
 
 import org.compx556.BoxList;
-import org.compx556.util.GlobalRandom;
 
-import java.util.Collections;
 import java.util.function.Function;
 
+/**
+ * <p>
+ * An interface extending <code>Function&lt;BoxList, BoxList&gt;</code>.
+ * </p>
+ * <p>
+ * The expected parameter for a <code>InitialisationFunction</code> is a BoxList representing a complete solution.</p>
+ * <p>
+ * The output should be a <code>BoxList</code> representing the new complete solution after reshuffling it in some way.
+ * </p>
+ */
 public interface InitialisationFunction extends Function<BoxList, BoxList> {
-    InitialisationFunction random = list -> {
-        // create new list with random order
-        BoxList output = list.clone();
-        Collections.shuffle(output);
-
-        // rotate boxes randomly
-        for (int i = 0; i < output.size(); i++) {
-            if (GlobalRandom.nextBoolean()) {
-                // clone box if it is going to be rotated
-                output.set(i, output.get(i).clone());
-                output.get(i).rotate();
-            }
-        }
-
-        return output;
-    };
 }
