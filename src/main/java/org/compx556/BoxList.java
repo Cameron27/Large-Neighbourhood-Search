@@ -21,11 +21,17 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
     }
 
     public int calculateHeight() {
-        int Height = 0;
+        int[] heights = new int[this.objectSize];
         for (Box b : this) {
-            Height = Height + b.getHeight();
+            for (int x = b.getXLocation(); x < b.getWidth() + b.getXLocation(); x++) {
+                heights[x] += b.getHeight();
+            }
         }
-        return Height;
+        int maxHeight = 0;
+        for (int height : heights) {
+            maxHeight = Math.max(maxHeight, height);
+        }
+        return maxHeight;
     }
 
     @Override
