@@ -143,9 +143,8 @@ public class RepairFunctions {
     }
 
     /**
-     * Inserts each <code>Box</code> object into a random location in the solution but will find the x value and
-     * rotation for the mox that minimises the height of the solution. Insertions are performed in a random order in a
-     * greedy fashion.
+     * Inserts each <code>Box</code> object into the best position to minimises the height of the solution. Insertions
+     * are performed in a random order in a greedy fashion.
      */
     public static RepairFunction optimumLocationOptimumX = (input, threadCount) -> {
         ExecutorService executor = null;
