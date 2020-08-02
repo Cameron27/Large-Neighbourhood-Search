@@ -126,6 +126,17 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
         return output;
     }
 
+
+    public BoxList deepClone() {
+        BoxList output = new BoxList(objectSize);
+
+        for (Box box : this) {
+            output.add(box.clone());
+        }
+
+        return output;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof BoxList)) return false;
