@@ -23,4 +23,6 @@ import java.util.function.BiFunction;
  * </p>
  */
 public interface RepairFunction extends BiFunction<Pair<BoxList, List<Box>>, Integer, BoxList> {
+    @Override
+    BoxList apply(Pair<BoxList, List<Box>> boxesPair, Integer threads);
 }

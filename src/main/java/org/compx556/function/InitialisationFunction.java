@@ -15,4 +15,6 @@ import java.util.function.Function;
  * </p>
  */
 public interface InitialisationFunction extends Function<BoxList, BoxList> {
+    @Override
+    BoxList apply(BoxList boxList);
 }
