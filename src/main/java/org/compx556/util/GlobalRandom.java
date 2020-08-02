@@ -17,6 +17,11 @@ public class GlobalRandom {
         return rnd.nextInt(bound);
     }
 
+
+    public static double nextDouble() {
+        return rnd.nextDouble();
+    }
+
     public static Random getRnd() {
         return rnd;
     }

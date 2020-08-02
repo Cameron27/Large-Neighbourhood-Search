@@ -3,9 +3,14 @@ package org.compx556.function;
 import org.compx556.Box;
 import org.compx556.BoxList;
 import org.compx556.util.GlobalRandom;
+import org.javatuples.Quartet;
 import org.javatuples.Triplet;
+import org.javatuples.Tuple;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +22,7 @@ public class RepairFunctions {
      * rotation for the mox that minimises the height of the solution. Insertions are performed in a random order in a
      * greedy fashion.
      */
-    public static RepairFunction randomLocationOptimumX = (input, threadCount) -> {
+    public static final RepairFunction randomLocationOptimumX = (input, threadCount) -> {
         ExecutorService executor = null;
 
         BoxList list = input.getValue0().clone();
@@ -58,14 +63,14 @@ public class RepairFunctions {
                                 }
                             })
                             // select best
-                            .min(Comparator.comparing(Triplet::getValue0))
+                            .min(Tuple::compareTo)
                             .orElseThrow(NoSuchElementException::new);
                 } catch (InterruptedException | NoSuchElementException e) {
                     throw new RuntimeException("Error in randomLocationOptimumX thread.");
                 }
                 // extract values
-                bestX = best.getValue1();
-                bestRotation = best.getValue2();
+                bestX = best.getValue2();
+                bestRotation = best.getValue1();
                 list.add(insertionIndex, box);
             }
             // single thread mode
@@ -103,7 +108,7 @@ public class RepairFunctions {
         return list;
     };
 
-    private static Callable<Triplet<Integer, Integer, Integer>> randomLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound, int insertionIndex) {
+    private static final Callable<Triplet<Integer, Integer, Integer>> randomLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound, int insertionIndex) {
         // clones objects so each thread has a copy
         final BoxList list = boxList.clone();
         final Box box = boxToAdd.clone();
@@ -133,7 +138,149 @@ public class RepairFunctions {
                 list.get(insertionIndex).rotate();
             }
 
-            return new Triplet<>(bestScore, bestX, bestRotation);
+            return new Triplet<>(bestScore, bestRotation, bestX);
+        };
+    }
+
+    /**
+     * Inserts each <code>Box</code> object into the best position to minimises the height of the solution. Insertions
+     * are performed in a random order in a greedy fashion.
+     */
+    public static final RepairFunction optimumLocationOptimumX = (input, threadCount) -> {
+        ExecutorService executor = null;
+
+        BoxList list = input.getValue0().clone();
+        List<Box> missing = new ArrayList<>(input.getValue1());
+        Collections.shuffle(missing, GlobalRandom.getRnd());
+
+        for (Box box : missing) {
+            box = box.clone();
+
+            int bestX = 0;
+            int bestRotation = 0;
+            int bestIndex = 0;
+
+
+            // multi thread mode
+            if (threadCount > 1) {
+                // setup executor
+                if (executor == null) executor = Executors.newFixedThreadPool(threadCount);
+
+                List<Callable<Quartet<Integer, Integer, Integer, Integer>>> threadList = new ArrayList<>();
+                int count = list.size() + 1;
+                for (int i = 0; i < threadCount; i++) {
+                    threadList.add(optimumLocationOptimumXThread(list, box, (int) (((float) i / threadCount) * count),
+                            (int) (((float) (i + 1) / threadCount) * count)));
+                }
+
+                Quartet<Integer, Integer, Integer, Integer> best;
+                try {
+                    // run threads
+                    best = executor.invokeAll(threadList)
+                            .stream()
+                            // get items
+                            .map(future -> {
+                                try {
+                                    return future.get();
+                                } catch (InterruptedException | ExecutionException e) {
+                                    throw new NoSuchElementException();
+                                }
+                            })
+                            // select best
+                            .min(Tuple::compareTo)
+                            .orElseThrow(NoSuchElementException::new);
+                } catch (InterruptedException | NoSuchElementException e) {
+                    throw new RuntimeException("Error in randomLocationOptimumX thread.");
+                }
+                // extract values
+                bestX = best.getValue3();
+                bestRotation = best.getValue2();
+                bestIndex = best.getValue1();
+            }
+            // single thread mode
+            else {
+                int bestScore = Integer.MAX_VALUE;
+
+                // for every location
+                int listSize = list.size();
+                for (int insertionIndex = 0; insertionIndex < listSize; insertionIndex++) {
+                    list.add(insertionIndex, box);
+
+                    // for both rotations
+                    for (int rotation = 0; rotation < 2; rotation++) {
+                        //for each valid x location
+                        for (int x = 0; x <= list.getObjectSize() - box.getWidth(); x++) {
+                            // move x location
+                            list.get(insertionIndex).setXStart(x);
+
+                            int score = list.calculateHeight();
+                            if (score < bestScore) {
+                                bestScore = score;
+                                bestX = x;
+                                bestRotation = rotation;
+                                bestIndex = insertionIndex;
+                            }
+                        }
+
+                        // rotate
+                        list.get(insertionIndex).rotate();
+                    }
+
+                    list.remove(insertionIndex);
+                }
+            }
+            // set to best x
+            list.add(bestIndex, box);
+            list.get(bestIndex).setXStart(bestX);
+            // if second rotation is best, rotate
+            if (bestRotation == 1) list.get(bestIndex).rotate();
+        }
+
+        if (executor != null) executor.shutdown();
+
+        return list;
+    };
+
+    private static final Callable<Quartet<Integer, Integer, Integer, Integer>> optimumLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound) {
+        // clones objects so each thread has a copy
+        final BoxList list = boxList.clone();
+        final Box box = boxToAdd.clone();
+
+        return () -> {
+            int bestScore = Integer.MAX_VALUE;
+            int bestX = 0;
+            int bestRotation = 0;
+            int bestIndex = 0;
+
+            // for every location
+            int listSize = list.size();
+            for (int insertionIndex = lowerBound; insertionIndex < upperBound; insertionIndex++) {
+                list.add(insertionIndex, box);
+
+                // for both rotations
+                for (int rotation = 0; rotation < 2; rotation++) {
+                    //for each valid x location
+                    for (int x = 0; x <= list.getObjectSize() - box.getWidth(); x++) {
+                        // move x location
+                        list.get(insertionIndex).setXStart(x);
+
+                        int score = list.calculateHeight();
+                        if (score < bestScore) {
+                            bestScore = score;
+                            bestX = x;
+                            bestRotation = rotation;
+                            bestIndex = insertionIndex;
+                        }
+                    }
+
+                    // rotate
+                    list.get(insertionIndex).rotate();
+                }
+
+                list.remove(insertionIndex);
+            }
+            
+            return new Quartet<>(bestScore, bestIndex, bestRotation, bestX);
         };
     }
 }

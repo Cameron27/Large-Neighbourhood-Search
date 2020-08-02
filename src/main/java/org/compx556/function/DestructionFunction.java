@@ -22,4 +22,6 @@ import java.util.function.BiFunction;
  * </p>
  */
 public interface DestructionFunction extends BiFunction<BoxList, Integer, Pair<BoxList, List<Box>>> {
+    @Override
+    Pair<BoxList, List<Box>> apply(BoxList boxList, Integer n);
 }
