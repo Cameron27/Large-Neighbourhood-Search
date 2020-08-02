@@ -78,7 +78,7 @@ public class RepairFunctions {
                     //for each valid x location
                     for (int x = 0; x <= list.getObjectSize() - box.getWidth(); x++) {
                         // move x location
-                        list.get(insertionIndex).setXLocation(x);
+                        list.get(insertionIndex).setXStart(x);
 
                         int score = list.calculateHeight();
                         if (score < bestScore) {
@@ -93,7 +93,7 @@ public class RepairFunctions {
                 }
             }
             // set to best x
-            list.get(insertionIndex).setXLocation(bestX);
+            list.get(insertionIndex).setXStart(bestX);
             // if second rotation is best, rotate
             if (bestRotation == 1) list.get(insertionIndex).rotate();
         }
@@ -119,7 +119,7 @@ public class RepairFunctions {
                 //for each valid x location
                 for (int x = lowerBound; x < Math.min(upperBound, list.getObjectSize() - box.getWidth() + 1); x++) {
                     // move x location
-                    list.get(insertionIndex).setXLocation(x);
+                    list.get(insertionIndex).setXStart(x);
 
                     int score = list.calculateHeight();
                     if (score < bestScore) {

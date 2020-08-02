@@ -50,4 +50,13 @@ public class Box implements Cloneable {
     public Box clone() {
         return new Box(width, height, xStart);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Box)) return false;
+        else {
+            Box b = (Box) o;
+            return width == b.width && height == b.height && xStart == b.xStart;
+        }
+    }
 }

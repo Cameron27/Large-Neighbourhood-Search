@@ -40,7 +40,7 @@ public class Config {
      * Seed to use for randomisation.
      */
     @Parameter(names = {"-s", "-seed"}, description = "Seed to use for randomness")
-    public Integer seed;
+    public Long seed;
 
     /**
      * Number of threads to use.

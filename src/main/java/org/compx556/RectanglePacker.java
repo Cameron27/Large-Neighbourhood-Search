@@ -5,6 +5,7 @@ import com.beust.jcommander.ParameterException;
 import org.compx556.function.DestructionFunctions;
 import org.compx556.function.InitialisationFunctions;
 import org.compx556.function.RepairFunctions;
+import org.compx556.util.GlobalRandom;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,19 +17,15 @@ public class RectanglePacker {
     private BoxList initialState;
 
     public RectanglePacker(Config config) throws IOException, DataFormatException {
-        try {
-            initialState = parseDataFile(config.dataFile);
-        } catch (IndexOutOfBoundsException e) {
-            throw new DataFormatException("Format of the provided data file is incorrect.");
-        }
+        initialState = parseDataFile(config.dataFile);
     }
 
     public int solve() {
         return 0;
     }
 
-    private static BoxList parseDataFile(File file) throws IOException {
-        BoxList initialList = new BoxList(400);
+    static BoxList parseDataFile(File file) throws IOException, DataFormatException {
+        BoxList initialList = null;
 
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
@@ -37,33 +34,36 @@ public class RectanglePacker {
         boolean isBoxData = false;
         int size = 0;
 
-        while (line != null) {
-            String[] data = line.split(",");
-            if (isBoxData) {
-                int numBox = Integer.parseInt(data[0]);
-                int xLocation = 0; // Placeholder
-                int width = Integer.parseInt(data[1]);
-                int height = Integer.parseInt(data[2]);
-                Box inputBox = new Box(width, height, xLocation);
-                initialList.add(inputBox);
+        try {
+            while (line != null) {
+                String[] data = line.split(",");
+                if (isBoxData) {
+                    int numBox = Integer.parseInt(data[0]);
+                    int xLocation = 0; // Placeholder
+                    int width = Integer.parseInt(data[1]);
+                    int height = Integer.parseInt(data[2]);
+                    Box inputBox = new Box(width, height, xLocation);
+                    initialList.add(inputBox);
 
-                if (numBox == size) {
-                    isBoxData = false;
+                    if (numBox == size) {
+                        isBoxData = false;
+                    }
+                } else {
+                    if (line.contains("object width")) {
+                        initialList = new BoxList(Integer.parseInt(data[2]));
+                    } else if (line.contains("width")) {
+                        isBoxData = true;
+                        if (initialList == null)
+                            throw new DataFormatException("Data is formatted incorrectly.");
+                    } else if (line.contains("size")) {
+                        size = Integer.parseInt(data[2]);
+                    }
                 }
-            } else {
-                if (line.contains("name:")) {
-                    String name = data[2];
-                    System.out.println(name);
-                }
-                if (line.contains("width")) {
-                    isBoxData = true;
-                }
-                if (line.contains("size")) {
-                    size = Integer.parseInt(data[2]);
-                }
+                line = br.readLine();
+
             }
-            line = br.readLine();
-
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            throw new DataFormatException("Data is formatted incorrectly.");
         }
 
         return initialList;
@@ -86,6 +86,8 @@ public class RectanglePacker {
             builder.usage();
             return;
         }
+
+        if (config.seed != null) GlobalRandom.setSeed(config.seed);
 
         RectanglePacker rectanglePacker = null;
         try {

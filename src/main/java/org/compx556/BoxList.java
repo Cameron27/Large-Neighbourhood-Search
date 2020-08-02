@@ -48,4 +48,21 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
 
         return output;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof BoxList)) return false;
+        else {
+            BoxList bl = (BoxList) o;
+            
+            if (objectSize != bl.objectSize) return false;
+            if (size() != bl.size()) return false;
+
+            for (int i = 0; i < size(); i++) {
+                if (!get(i).equals(bl.get(i))) return false;
+            }
+
+            return true;
+        }
+    }
 }

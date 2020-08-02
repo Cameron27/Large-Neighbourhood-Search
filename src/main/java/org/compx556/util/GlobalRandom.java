@@ -20,4 +20,8 @@ public class GlobalRandom {
     public static Random getRnd() {
         return rnd;
     }
+
+    public static void setSeed(Long seed) {
+        rnd.setSeed(seed);
+    }
 }
