@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.zip.DataFormatException;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class RectanglePackerTest {
     @Test
@@ -15,8 +15,8 @@ public class RectanglePackerTest {
 
         RectanglePacker.main(new String[]{});
         RectanglePacker.main(new String[]{"-help"});
-        RectanglePacker.main(new String[]{m1aSmall});
-        RectanglePacker.main(new String[]{"-s", "23", m1aSmall});
+        RectanglePacker.main(new String[]{"-t", "500", m1aSmall});
+        RectanglePacker.main(new String[]{"-s", "23", "-t", "500", m1aSmall});
     }
 
     @Test
@@ -31,7 +31,7 @@ public class RectanglePackerTest {
         m1aVerySmallListExplicit.add(new Box(4, 9, 0));
         m1aVerySmallListExplicit.add(new Box(8, 7, 0));
 
-        assertTrue(m1aVerySmallList.equals(m1aVerySmallListExplicit));
+        assertEquals(m1aVerySmallList, m1aVerySmallListExplicit);
 
         String m1a = this.getClass().getResource("/m1a.csv").getFile();
         String m2c = this.getClass().getResource("/m2c.csv").getFile();
