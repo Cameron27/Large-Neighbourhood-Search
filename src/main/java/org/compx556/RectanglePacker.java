@@ -48,6 +48,7 @@ public class RectanglePacker {
 
         long startTime = System.currentTimeMillis();
         int iterations = 0;
+        // while there is time remaining
         while (System.currentTimeMillis() - startTime < maxTime) {
             // get neighbour
             BoxList next = repairFunction.apply(destructionFunction.apply(current, 15), threadCount);
@@ -132,9 +133,11 @@ public class RectanglePacker {
     }
 
     public static void main(String[] args) {
+        // create config
         Config config = new Config(AcceptanceFunctions.hillClimb, InitialisationFunctions.random,
                 DestructionFunctions.randomNRemove, RepairFunctions.randomLocationOptimumX);
 
+        // parse args
         JCommander builder = JCommander.newBuilder()
                 .addObject(config)
                 .build();
@@ -150,8 +153,10 @@ public class RectanglePacker {
             return;
         }
 
+        // set seed if provided
         if (config.seed != null) GlobalRandom.setSeed(config.seed);
 
+        // create packer
         RectanglePacker rectanglePacker = null;
         try {
             rectanglePacker = new RectanglePacker(config);
@@ -163,6 +168,7 @@ public class RectanglePacker {
             return;
         }
 
+        // calculate
         int bestHeight = rectanglePacker.solve();
 
         System.out.println("Best height: " + bestHeight);
