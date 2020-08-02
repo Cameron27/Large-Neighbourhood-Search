@@ -1,5 +1,6 @@
 package org.compx556.function;
 
+import org.compx556.Box;
 import org.compx556.BoxList;
 import org.compx556.util.GlobalRandom;
 
@@ -20,11 +21,14 @@ public class InitialisationFunctions {
 
         // rotate boxes randomly
         for (int i = 0; i < output.size(); i++) {
+            Box b = list.get(i).clone();
             if (GlobalRandom.nextBoolean()) {
                 // clone box if it is going to be rotated
-                output.set(i, output.get(i).clone());
-                output.get(i).rotate();
+                b.rotate();
             }
+            b.setXStart(GlobalRandom.nextInt(list.getObjectSize() - b.getWidth() + 1));
+
+            output.set(i, b);
         }
 
         return output;

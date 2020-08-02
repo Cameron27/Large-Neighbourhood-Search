@@ -45,8 +45,14 @@ public class Config {
     /**
      * Number of threads to use.
      */
-    @Parameter(names = {"-t", "-threads"}, description = "Number of threads to use")
+    @Parameter(names = {"-threads"}, description = "Number of threads to use")
     public Integer threadCount = Runtime.getRuntime().availableProcessors();
+
+    /**
+     * Time to run algorithm for.
+     */
+    @Parameter(names = {"-t", "-time"}, description = "Max runtime in milliseconds")
+    public long runtime = 10000;
 
     /**
      * Whether or not help be displayed.
