@@ -2,6 +2,7 @@ package org.compx556;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
+import org.compx556.function.AcceptanceFunction;
 import org.compx556.function.DestructionFunction;
 import org.compx556.function.InitialisationFunction;
 import org.compx556.function.RepairFunction;
@@ -9,6 +10,11 @@ import org.compx556.function.RepairFunction;
 import java.io.File;
 
 public class Config {
+    /**
+     * Acceptance function to use in algorithm.
+     */
+    public AcceptanceFunction acceptanceFunction;
+
     /**
      * Initialisation function to use in algorithm.
      */
@@ -67,7 +73,9 @@ public class Config {
      * @param destructionFunction    the destruction function
      * @param repairFunction         the repair function
      */
-    public Config(InitialisationFunction initialisationFunction, DestructionFunction destructionFunction, RepairFunction repairFunction) {
+    public Config(AcceptanceFunction acceptanceFunction, InitialisationFunction initialisationFunction,
+                  DestructionFunction destructionFunction, RepairFunction repairFunction) {
+        this.acceptanceFunction = acceptanceFunction;
         this.initialisationFunction = initialisationFunction;
         this.destructionFunction = destructionFunction;
         this.repairFunction = repairFunction;

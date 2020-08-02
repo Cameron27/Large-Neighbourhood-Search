@@ -12,7 +12,7 @@ public class DestructionFunctions {
     /**
      * Removes a number of <code>Box</code> objects randomly from the solution.
      */
-    public static DestructionFunction randomNRemove = (list, n) -> {
+    public static final DestructionFunction randomNRemove = (list, n) -> {
         // create new lists
         BoxList remaining = list.clone();
         List<Box> removed = new ArrayList<>();

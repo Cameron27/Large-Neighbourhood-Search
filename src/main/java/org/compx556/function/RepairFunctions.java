@@ -22,7 +22,7 @@ public class RepairFunctions {
      * rotation for the mox that minimises the height of the solution. Insertions are performed in a random order in a
      * greedy fashion.
      */
-    public static RepairFunction randomLocationOptimumX = (input, threadCount) -> {
+    public static final RepairFunction randomLocationOptimumX = (input, threadCount) -> {
         ExecutorService executor = null;
 
         BoxList list = input.getValue0().clone();
@@ -108,7 +108,7 @@ public class RepairFunctions {
         return list;
     };
 
-    private static Callable<Triplet<Integer, Integer, Integer>> randomLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound, int insertionIndex) {
+    private static final Callable<Triplet<Integer, Integer, Integer>> randomLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound, int insertionIndex) {
         // clones objects so each thread has a copy
         final BoxList list = boxList.clone();
         final Box box = boxToAdd.clone();
@@ -146,7 +146,7 @@ public class RepairFunctions {
      * Inserts each <code>Box</code> object into the best position to minimises the height of the solution. Insertions
      * are performed in a random order in a greedy fashion.
      */
-    public static RepairFunction optimumLocationOptimumX = (input, threadCount) -> {
+    public static final RepairFunction optimumLocationOptimumX = (input, threadCount) -> {
         ExecutorService executor = null;
 
         BoxList list = input.getValue0().clone();
@@ -167,7 +167,7 @@ public class RepairFunctions {
                 if (executor == null) executor = Executors.newFixedThreadPool(threadCount);
 
                 List<Callable<Quartet<Integer, Integer, Integer, Integer>>> threadList = new ArrayList<>();
-                int count = list.getObjectSize() + 1;
+                int count = list.size() + 1;
                 for (int i = 0; i < threadCount; i++) {
                     threadList.add(optimumLocationOptimumXThread(list, box, (int) (((float) i / threadCount) * count),
                             (int) (((float) (i + 1) / threadCount) * count)));
@@ -241,7 +241,7 @@ public class RepairFunctions {
         return list;
     };
 
-    private static Callable<Quartet<Integer, Integer, Integer, Integer>> optimumLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound) {
+    private static final Callable<Quartet<Integer, Integer, Integer, Integer>> optimumLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound) {
         // clones objects so each thread has a copy
         final BoxList list = boxList.clone();
         final Box box = boxToAdd.clone();
@@ -279,7 +279,7 @@ public class RepairFunctions {
 
                 list.remove(insertionIndex);
             }
-
+            
             return new Quartet<>(bestScore, bestIndex, bestRotation, bestX);
         };
     }

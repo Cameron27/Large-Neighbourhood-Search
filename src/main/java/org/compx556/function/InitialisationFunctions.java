@@ -14,7 +14,7 @@ public class InitialisationFunctions {
      * Randomises the order of the <code>Box</code> objects and sets every <code>Box</code> to have a random x value and
      * rotation.
      */
-    public static InitialisationFunction random = list -> {
+    public static final InitialisationFunction random = list -> {
         // create new list with random order
         BoxList output = list.clone();
         Collections.shuffle(output);

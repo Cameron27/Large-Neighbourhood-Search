@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import org.compx556.function.*;
 import org.compx556.util.GlobalRandom;
+import org.javatuples.Triplet;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +14,7 @@ import java.util.zip.DataFormatException;
 
 public class RectanglePacker {
     private BoxList initialState;
+    private final AcceptanceFunction acceptanceFunction;
     private final InitialisationFunction initialisationFunction;
     private final DestructionFunction destructionFunction;
     private final RepairFunction repairFunction;
@@ -23,9 +25,11 @@ public class RectanglePacker {
     public RectanglePacker(Config config) throws IOException, DataFormatException {
         initialState = parseDataFile(config.dataFile);
 
+        acceptanceFunction = config.acceptanceFunction;
         initialisationFunction = config.initialisationFunction;
         destructionFunction = config.destructionFunction;
         repairFunction = config.repairFunction;
+
 
         maxTime = config.runtime;
         threadCount = config.threadCount;
@@ -38,21 +42,35 @@ public class RectanglePacker {
         int currentHeight = current.calculateHeight();
         int bestHeight = currentHeight;
 
+        double startTemp = currentHeight * (1 - 1.1) / Math.log(0.5);
+        double endTemp = 0;
+        double temp = startTemp;
+
         long startTime = System.currentTimeMillis();
         int iterations = 0;
         while (System.currentTimeMillis() - startTime < maxTime) {
+            // get neighbour
             BoxList next = repairFunction.apply(destructionFunction.apply(current, 15), threadCount);
             int nextHeight = next.calculateHeight();
 
-            if (nextHeight < currentHeight) {
+            // check acceptance
+            int acceptanceLevel = acceptanceFunction.apply(new Triplet<>(nextHeight, currentHeight, bestHeight),
+                    temp);
+
+            // update current if accepted
+            if (acceptanceLevel >= AcceptanceFunction.ACCEPTED) {
                 current = next;
                 currentHeight = nextHeight;
             }
-            if (currentHeight < bestHeight) {
+            // update best if new best
+            if (acceptanceLevel >= AcceptanceFunction.BEST) {
                 best = current;
                 bestHeight = currentHeight;
             }
 
+            // update temp
+            double remainingTimeFraction = (maxTime - (System.currentTimeMillis() - startTime)) / (double) maxTime;
+            temp = (startTemp - endTemp) * remainingTimeFraction + endTemp;
             iterations++;
         }
 
@@ -114,7 +132,8 @@ public class RectanglePacker {
     }
 
     public static void main(String[] args) {
-        Config config = new Config(InitialisationFunctions.random, DestructionFunctions.randomNRemove, RepairFunctions.randomLocationOptimumX);
+        Config config = new Config(AcceptanceFunctions.hillClimb, InitialisationFunctions.random,
+                DestructionFunctions.randomNRemove, RepairFunctions.randomLocationOptimumX);
 
         JCommander builder = JCommander.newBuilder()
                 .addObject(config)
