@@ -25,4 +25,17 @@ public class AcceptanceFunctions {
             return ACCEPTED;
         return REJECTED;
     };
+
+    /**
+     * Will accept solutions worse than the current if they are within a certain distance of the best solution.
+     */
+    public static final AcceptanceFunction recordToRecord = (next, current, best, temp) -> {
+        if (next < best)
+            return BEST;
+        if (next < current)
+            return BETTER;
+        if ((next - best) / (double) next < temp)
+            return ACCEPTED;
+        return REJECTED;
+    };
 }

@@ -41,7 +41,7 @@ public class RectanglePacker {
         int currentHeight = current.calculateHeight();
         int bestHeight = currentHeight;
 
-        double startTemp = currentHeight * (1 - 1.1) / Math.log(0.5);
+        double startTemp = 0.1;
         double endTemp = 0;
         double temp = startTemp;
 
