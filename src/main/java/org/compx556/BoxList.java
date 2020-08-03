@@ -12,19 +12,26 @@ import java.util.Collection;
 
 public class BoxList extends ArrayList<Box> implements Cloneable {
     private int objectSize;
+    private int minHeight;
 
-    public BoxList(int objectSize) {
+    public BoxList(int objectSize, int minHeight) {
         super();
         this.objectSize = objectSize;
+        this.minHeight = minHeight;
     }
 
-    public BoxList(Collection<? extends Box> c, int objectSize) {
+    public BoxList(Collection<? extends Box> c, int objectSize, int minHeight) {
         super(c);
         this.objectSize = objectSize;
+        this.minHeight = minHeight;
     }
 
     public int getObjectSize() {
         return objectSize;
+    }
+
+    public int getMinHeight() {
+        return minHeight;
     }
 
     public int calculateHeight() {
@@ -40,11 +47,11 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
                 heights[x] = boxHeight;
             }
         }
-        int maxHeight = 0;
+        int highestPoint = 0;
         for (int height : heights) {
-            maxHeight = Math.max(maxHeight, height);
+            highestPoint = Math.max(highestPoint, height);
         }
-        return maxHeight;
+        return highestPoint - minHeight;
     }
 
     public void saveResult(File outFile) throws IOException {
@@ -119,7 +126,7 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
 
     @Override
     public BoxList clone() {
-        BoxList output = new BoxList(objectSize);
+        BoxList output = new BoxList(objectSize, minHeight);
 
         output.addAll(this);
 
@@ -128,7 +135,7 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
 
 
     public BoxList deepClone() {
-        BoxList output = new BoxList(objectSize);
+        BoxList output = new BoxList(objectSize, minHeight);
 
         for (Box box : this) {
             output.add(box.clone());

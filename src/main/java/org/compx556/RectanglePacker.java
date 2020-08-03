@@ -82,7 +82,7 @@ public class RectanglePacker {
             }
         }
 
-        return bestHeight;
+        return bestHeight + best.getMinHeight();
     }
 
     static BoxList parseDataFile(File file) throws IOException, DataFormatException {
@@ -94,6 +94,7 @@ public class RectanglePacker {
         String line = br.readLine();
         boolean isBoxData = false;
         int size = 0;
+        int itemArea = 0;
 
         try {
             while (line != null) {
@@ -111,7 +112,10 @@ public class RectanglePacker {
                     }
                 } else {
                     if (line.contains("object width")) {
-                        initialList = new BoxList(Integer.parseInt(data[2]));
+                        int objectWidth = Integer.parseInt(data[2]);
+                        initialList = new BoxList(objectWidth, (int) Math.ceil((double) itemArea / objectWidth));
+                    } else if (line.contains("item area")) {
+                        itemArea = Integer.parseInt(data[2]);
                     } else if (line.contains("width")) {
                         isBoxData = true;
                         if (initialList == null)

@@ -24,7 +24,7 @@ public class RectanglePackerTest {
         String m1aVerySmall = this.getClass().getResource("/m1a_very_small.csv").getFile();
         BoxList m1aVerySmallList = RectanglePacker.parseDataFile(new File(m1aVerySmall));
 
-        BoxList m1aVerySmallListExplicit = new BoxList(15);
+        BoxList m1aVerySmallListExplicit = new BoxList(15, 144);
         m1aVerySmallListExplicit.add(new Box(1, 6, 0));
         m1aVerySmallListExplicit.add(new Box(2, 8, 0));
         m1aVerySmallListExplicit.add(new Box(6, 5, 0));
