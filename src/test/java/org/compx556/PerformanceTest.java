@@ -1,9 +1,6 @@
 package org.compx556;
 
-import org.compx556.function.AcceptanceFunctions;
-import org.compx556.function.DestructionFunctions;
-import org.compx556.function.InitialisationFunctions;
-import org.compx556.function.RepairFunctions;
+import org.compx556.function.*;
 import org.junit.Test;
 
 import java.io.File;
@@ -17,54 +14,23 @@ public class PerformanceTest {
         Config config = new Config(AcceptanceFunctions.hillClimb, InitialisationFunctions.random,
                 DestructionFunctions.randomNRemove, RepairFunctions.randomLocationOptimumX);
         config.seed = 10L;
-        config.threadCount = 12;
 
-        // m1a
-        {
-            config.dataFile = new File(getClass().getResource("/m1a.csv").getFile());
-            config.runtime = 2000;
+        String[] dataFiles = new String[]{"/m1a.csv", "/m2c.csv", "/m3d.csv"};
+        int[] runtimes = new int[]{2000, 5000, 10000};
+        RepairFunction[] repairFunctions = new RepairFunction[]{RepairFunctions.randomLocationOptimumX,
+                RepairFunctions.optimumLocationOptimumX};
+        String[] repairFunctionNames = new String[]{"random location, optimum x", "optimum location, optimum x"};
 
-            // randomLocationOptimumX test
-            config.repairFunction = RepairFunctions.randomLocationOptimumX;
-            RectanglePacker rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m1a randomLocationOptimumX");
+        for (int i = 0; i < dataFiles.length; i++) {
+            config.dataFile = new File(getClass().getResource(dataFiles[i]).getFile());
+            config.runtime = runtimes[i];
 
-            // optimumLocationOptimumX test
-            config.repairFunction = RepairFunctions.optimumLocationOptimumX;
-            rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m1a optimumLocationOptimumX");
+            for (int j = 0; j < repairFunctions.length; j++) {
+                config.repairFunction = repairFunctions[j];
+                RectanglePacker rectanglePacker = new RectanglePacker(config);
+                runTest(rectanglePacker, dataFiles[i] + " " + repairFunctionNames[j]);
+            }
         }
-        // m2c
-        {
-            config.dataFile = new File(getClass().getResource("/m2c.csv").getFile());
-            config.runtime = 5000;
-
-            // randomLocationOptimumX test
-            config.repairFunction = RepairFunctions.randomLocationOptimumX;
-            RectanglePacker rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m2c randomLocationOptimumX");
-
-            // optimumLocationOptimumX test
-            config.repairFunction = RepairFunctions.optimumLocationOptimumX;
-            rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m2c optimumLocationOptimumX");
-        }
-        // m3d
-        {
-            config.dataFile = new File(getClass().getResource("/m3d.csv").getFile());
-            config.runtime = 10000;
-
-            // randomLocationOptimumX test
-            config.repairFunction = RepairFunctions.randomLocationOptimumX;
-            RectanglePacker rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m3d randomLocationOptimumX");
-
-            // optimumLocationOptimumX test
-            config.repairFunction = RepairFunctions.optimumLocationOptimumX;
-            rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m3d optimumLocationOptimumX");
-        }
-
     }
 
     @Test
@@ -72,57 +38,27 @@ public class PerformanceTest {
         Config config = new Config(AcceptanceFunctions.hillClimb, InitialisationFunctions.random,
                 DestructionFunctions.randomNRemove, RepairFunctions.randomLocationOptimumX);
         config.seed = 10L;
-        config.threadCount = 12;
 
-        // m1a
-        {
-            config.dataFile = new File(getClass().getResource("/m1a.csv").getFile());
-            config.runtime = 2000;
+        String[] dataFiles = new String[]{"/m1a.csv", "/m2c.csv", "/m3d.csv"};
+        int[] runtimes = new int[]{2000, 5000, 10000};
+        AcceptanceFunction[] acceptanceFunctions = new AcceptanceFunction[]{AcceptanceFunctions.hillClimb,
+                AcceptanceFunctions.recordToRecord};
+        String[] acceptanceFunctionNames = new String[]{"hill climb", "record-to-record"};
 
-            // hillClimb test
-            config.acceptanceFunction = AcceptanceFunctions.hillClimb;
-            RectanglePacker rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m1a hillClimb");
+        for (int i = 0; i < dataFiles.length; i++) {
+            config.dataFile = new File(getClass().getResource(dataFiles[i]).getFile());
+            config.runtime = runtimes[i];
 
-            // simulatedAnnealing test
-            config.acceptanceFunction = AcceptanceFunctions.simulatedAnnealing;
-            rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m1a simulatedAnnealing");
-        }
-        // m2c
-        {
-            config.dataFile = new File(getClass().getResource("/m2c.csv").getFile());
-            config.runtime = 5000;
-
-            // hillClimb test
-            config.acceptanceFunction = AcceptanceFunctions.hillClimb;
-            RectanglePacker rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m2c hillClimb");
-
-            // simulatedAnnealing test
-            config.acceptanceFunction = AcceptanceFunctions.simulatedAnnealing;
-            rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m2c simulatedAnnealing");
-        }
-        // m3d
-        {
-            config.dataFile = new File(getClass().getResource("/m3d.csv").getFile());
-            config.runtime = 10000;
-
-            // hillClimb test
-            config.acceptanceFunction = AcceptanceFunctions.hillClimb;
-            RectanglePacker rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m3d hillClimb");
-
-            // simulatedAnnealing test
-            config.acceptanceFunction = AcceptanceFunctions.simulatedAnnealing;
-            rectanglePacker = new RectanglePacker(config);
-            runTest(rectanglePacker, "m3d simulatedAnnealing");
+            for (int j = 0; j < acceptanceFunctions.length; j++) {
+                config.acceptanceFunction = acceptanceFunctions[j];
+                RectanglePacker rectanglePacker = new RectanglePacker(config);
+                runTest(rectanglePacker, dataFiles[i] + " " + acceptanceFunctionNames[j]);
+            }
         }
     }
 
     private void runTest(RectanglePacker rectanglePacker, String name) {
-        int count = 3;
+        int count = 10;
         int[] results = new int[count];
 
         for (int i = 0; i < count; i++) {
