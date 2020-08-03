@@ -5,11 +5,10 @@ import org.compx556.BoxList;
 import org.javatuples.Pair;
 
 import java.util.List;
-import java.util.function.BiFunction;
 
 /**
  * <p>
- * An interface extending <code>BiFunction&lt;Pair&lt;BoxList, List&lt;Box&gt;&gt;, Integer, BoxList&gt;</code>.
+ * A function to add missing <code>Box</code> elements to a partial solution.
  * </p>
  * <p>
  * The expected parameters for a <code>RepairFunction</code> include a <code>Pair</code> containing a
@@ -22,7 +21,15 @@ import java.util.function.BiFunction;
  * <code>Box</code> objects inserted into the solution.
  * </p>
  */
-public interface RepairFunction extends BiFunction<Pair<BoxList, List<Box>>, Integer, BoxList> {
-    @Override
-    BoxList apply(Pair<BoxList, List<Box>> boxesPair, Integer threads);
+@FunctionalInterface
+public interface RepairFunction {
+    /**
+     * Apply the function.
+     *
+     * @param boxesPair a <code>Pair</code> containing:
+     *                  <ul><li>the new partial solution</li><li>the removed <code>Box</code> elements</li></ul>
+     * @param threads   number of thread to use to run the function
+     * @return the new solution
+     */
+    BoxList apply(Pair<BoxList, List<Box>> boxesPair, int threads);
 }

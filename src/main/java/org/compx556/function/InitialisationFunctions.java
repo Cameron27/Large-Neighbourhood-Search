@@ -6,9 +6,6 @@ import org.compx556.util.GlobalRandom;
 
 import java.util.Collections;
 
-/**
- * Contains static <code>InitialisationFunction(s)</code> to use.
- */
 public class InitialisationFunctions {
     /**
      * Randomises the order of the <code>Box</code> objects and sets every <code>Box</code> to have a random x value and

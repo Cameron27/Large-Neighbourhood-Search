@@ -108,7 +108,23 @@ public class RepairFunctions {
         return list;
     };
 
-    private static final Callable<Triplet<Integer, Integer, Integer>> randomLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound, int insertionIndex) {
+    /**
+     * Created a <code>Callable</code> to use as a thread that finds the best location for a <code>Box</code> to be
+     * inserted into a partial solution at a specific index for a subset of valid x locations.
+     *
+     * @param boxList        current partial solution
+     * @param boxToAdd       <code>Box</code> to insert
+     * @param lowerBound     lower bound of x values to check (inclusive)
+     * @param upperBound     upper bound of x values to check (exclusive)
+     * @param insertionIndex index to insert box into
+     * @return a <code>Triplet</code> containing:
+     * <ul>
+     * <li>the height of the best solution found</li>
+     * <li>the rotation of the <code>Box</code> for the best solution found</li>
+     * <li>the x location of the <code>Box</code> for the best solution found</li>
+     * </ul>
+     */
+    private static Callable<Triplet<Integer, Integer, Integer>> randomLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound, int insertionIndex) {
         // clones objects so each thread has a copy
         final BoxList list = boxList.clone();
         final Box box = boxToAdd.clone();
@@ -241,7 +257,23 @@ public class RepairFunctions {
         return list;
     };
 
-    private static final Callable<Quartet<Integer, Integer, Integer, Integer>> optimumLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound) {
+    /**
+     * Created a <code>Callable</code> to use as a thread that finds the best location for a <code>Box</code> to be
+     * inserted into for a subset of indices.
+     *
+     * @param boxList    current partial solution
+     * @param boxToAdd   <code>Box</code> to insert
+     * @param lowerBound lower bound of indices to check (inclusive)
+     * @param upperBound upper bound of indices to check (exclusive)
+     * @return a <code>Quartet</code> containing:
+     * <ul>
+     * <li>the height of the best solution found</li>
+     * <li>index of the <code>Box</code> for the best solution found</li>
+     * <li>the rotation of the <code>Box</code> for the best solution found</li>
+     * <li>the x location of the <code>Box</code> for the best solution found</li>
+     * </ul>
+     */
+    private static Callable<Quartet<Integer, Integer, Integer, Integer>> optimumLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound) {
         // clones objects so each thread has a copy
         final BoxList list = boxList.clone();
         final Box box = boxToAdd.clone();
@@ -253,7 +285,6 @@ public class RepairFunctions {
             int bestIndex = 0;
 
             // for every location
-            int listSize = list.size();
             for (int insertionIndex = lowerBound; insertionIndex < upperBound; insertionIndex++) {
                 list.add(insertionIndex, box);
 
@@ -279,7 +310,7 @@ public class RepairFunctions {
 
                 list.remove(insertionIndex);
             }
-            
+
             return new Quartet<>(bestScore, bestIndex, bestRotation, bestX);
         };
     }

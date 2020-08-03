@@ -4,7 +4,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import org.compx556.function.*;
 import org.compx556.util.GlobalRandom;
-import org.javatuples.Triplet;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -55,8 +54,7 @@ public class RectanglePacker {
             int nextHeight = next.calculateHeight();
 
             // check acceptance
-            int acceptanceLevel = acceptanceFunction.apply(new Triplet<>(nextHeight, currentHeight, bestHeight),
-                    temp);
+            int acceptanceLevel = acceptanceFunction.apply(nextHeight, currentHeight, bestHeight, temp);
 
             // update current if accepted
             if (acceptanceLevel >= AcceptanceFunction.ACCEPTED) {

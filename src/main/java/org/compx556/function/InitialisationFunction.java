@@ -2,11 +2,9 @@ package org.compx556.function;
 
 import org.compx556.BoxList;
 
-import java.util.function.Function;
-
 /**
  * <p>
- * An interface extending <code>Function&lt;BoxList, BoxList&gt;</code>.
+ * A function to generate an initial solution.
  * </p>
  * <p>
  * The expected parameter for a <code>InitialisationFunction</code> is a BoxList representing a complete solution.</p>
@@ -14,7 +12,14 @@ import java.util.function.Function;
  * The output should be a <code>BoxList</code> representing the new complete solution after reshuffling it in some way.
  * </p>
  */
-public interface InitialisationFunction extends Function<BoxList, BoxList> {
-    @Override
+@FunctionalInterface
+public interface InitialisationFunction {
+    /**
+     * Apply the function.
+     *
+     * @param boxList a <code>BoxList</code> containing the <code>Box</code>> elements to generate the initial solution
+     *                from
+     * @return the initial solution
+     */
     BoxList apply(BoxList boxList);
 }

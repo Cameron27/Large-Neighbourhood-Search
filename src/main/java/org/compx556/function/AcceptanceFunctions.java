@@ -5,19 +5,18 @@ import org.compx556.util.GlobalRandom;
 import static org.compx556.function.AcceptanceFunction.*;
 
 public class AcceptanceFunctions {
-    public static final AcceptanceFunction hillClimb = (triplet, temp) -> {
-        int next = triplet.getValue0();
-        int current = triplet.getValue1();
-
+    /**
+     * Accepts the next solution only if it is better than the best solution.
+     */
+    public static final AcceptanceFunction hillClimb = (next, current, best, temp) -> {
         if (next < current) return BEST;
         return REJECTED;
     };
 
-    public static final AcceptanceFunction simulatedAnnealing = (triplet, temp) -> {
-        int next = triplet.getValue0();
-        int current = triplet.getValue1();
-        int best = triplet.getValue2();
-
+    /**
+     * Uses simulated annealing to accept some solutions that are worse than the current solution.
+     */
+    public static final AcceptanceFunction simulatedAnnealing = (next, current, best, temp) -> {
         if (next < best)
             return BEST;
         if (next < current)
