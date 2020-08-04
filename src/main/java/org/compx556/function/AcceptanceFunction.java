@@ -43,5 +43,5 @@ public interface AcceptanceFunction {
      * @param temperature current temperature
      * @return acceptance level
      */
-    int apply(int next, int current, int best, double temperature);
+    int apply(double next, double current, double best, double temperature);
 }

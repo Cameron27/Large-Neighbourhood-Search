@@ -34,7 +34,7 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
         return minHeight;
     }
 
-    public int calculateHeight() {
+    public double calculateHeight(boolean optimiseForComparison) {
         int[] heights = new int[this.objectSize];
         for (Box b : this) {
             int yLocation = 0;
@@ -47,22 +47,31 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
                 heights[x] = boxHeight;
             }
         }
-        int highestPoint = 0;
+        double highestPoint = 0;
         for (int height : heights) {
             highestPoint = Math.max(highestPoint, height);
         }
-        return highestPoint - minHeight;
+
+        if (optimiseForComparison) {
+            int count = 0;
+            for (int height : heights) {
+                count += height == highestPoint ? 1 : 0;
+            }
+            highestPoint += (double) count / objectSize;
+        }
+
+        return highestPoint - (optimiseForComparison ? minHeight : 0);
     }
 
     public void saveResult(File outFile) throws IOException {
-        saveResult(outFile, calculateHeight());
+        saveResult(outFile, calculateHeight(false));
     }
 
-    public void saveResult(File outFile, int height) throws IOException {
+    public void saveResult(File outFile, double height) throws IOException {
         final int scale = 8;
 
         int imageWidth = objectSize * scale;
-        int imageHeight = height * scale;
+        int imageHeight = (int) (height * scale);
         BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_BGR);
         int[] pixels = image.getRGB(0, 0, imageWidth, imageHeight, null, 0, imageWidth);
         int[] heights = new int[objectSize];

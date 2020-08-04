@@ -38,8 +38,8 @@ public class RectanglePacker {
     public int solve() {
         BoxList current = initialisationFunction.apply(initialState);
         BoxList best = current;
-        int currentHeight = current.calculateHeight();
-        int bestHeight = currentHeight;
+        double currentHeight = current.calculateHeight(true);
+        double bestHeight = currentHeight;
 
         double startTemp = 0.1;
         double endTemp = 0;
@@ -51,7 +51,7 @@ public class RectanglePacker {
         while (System.currentTimeMillis() - startTime < maxTime) {
             // get neighbour
             BoxList next = repairFunction.apply(destructionFunction.apply(current, 15), threadCount);
-            int nextHeight = next.calculateHeight();
+            double nextHeight = next.calculateHeight(true);
 
             // check acceptance
             int acceptanceLevel = acceptanceFunction.apply(nextHeight, currentHeight, bestHeight, temp);
@@ -73,16 +73,17 @@ public class RectanglePacker {
             iterations++;
         }
 
+        int finalHeight = (int) best.calculateHeight(false);
         // save file if an output file was provided
         if (outFile != null) {
             try {
-                best.saveResult(outFile, bestHeight);
+                best.saveResult(outFile, finalHeight);
             } catch (IOException e) {
                 System.err.println("Failed to save output as image.");
             }
         }
 
-        return bestHeight + best.getMinHeight();
+        return finalHeight;
     }
 
     static BoxList parseDataFile(File file) throws IOException, DataFormatException {

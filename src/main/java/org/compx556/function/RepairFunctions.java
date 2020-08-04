@@ -42,14 +42,14 @@ public class RepairFunctions {
                 // setup executor
                 if (executor == null) executor = Executors.newFixedThreadPool(threadCount);
 
-                List<Callable<Triplet<Integer, Integer, Integer>>> threadList = new ArrayList<>();
+                List<Callable<Triplet<Double, Integer, Integer>>> threadList = new ArrayList<>();
                 int count = list.getObjectSize() - Math.min(box.getWidth(), box.getHeight()) + 1;
                 for (int i = 0; i < threadCount; i++) {
                     threadList.add(randomLocationOptimumXThread(list, box, (int) (((float) i / threadCount) * count),
                             (int) (((float) (i + 1) / threadCount) * count), insertionIndex));
                 }
 
-                Triplet<Integer, Integer, Integer> best;
+                Triplet<Double, Integer, Integer> best;
                 try {
                     // run threads
                     best = executor.invokeAll(threadList)
@@ -75,7 +75,7 @@ public class RepairFunctions {
             }
             // single thread mode
             else {
-                int bestScore = Integer.MAX_VALUE;
+                double bestScore = Double.POSITIVE_INFINITY;
                 list.add(insertionIndex, box);
 
                 // for both rotations
@@ -85,7 +85,7 @@ public class RepairFunctions {
                         // move x location
                         list.get(insertionIndex).setXStart(x);
 
-                        int score = list.calculateHeight();
+                        double score = list.calculateHeight(true);
                         if (score < bestScore) {
                             bestScore = score;
                             bestX = x;
@@ -124,13 +124,13 @@ public class RepairFunctions {
      * <li>the x location of the <code>Box</code> for the best solution found</li>
      * </ul>
      */
-    private static Callable<Triplet<Integer, Integer, Integer>> randomLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound, int insertionIndex) {
+    private static Callable<Triplet<Double, Integer, Integer>> randomLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound, int insertionIndex) {
         // clones objects so each thread has a copy
         final BoxList list = boxList.clone();
         final Box box = boxToAdd.clone();
 
         return () -> {
-            int bestScore = Integer.MAX_VALUE;
+            double bestScore = Double.POSITIVE_INFINITY;
             int bestX = 0;
             int bestRotation = 0;
             list.add(insertionIndex, box);
@@ -142,7 +142,7 @@ public class RepairFunctions {
                     // move x location
                     list.get(insertionIndex).setXStart(x);
 
-                    int score = list.calculateHeight();
+                    double score = list.calculateHeight(true);
                     if (score < bestScore) {
                         bestScore = score;
                         bestX = x;
@@ -182,14 +182,14 @@ public class RepairFunctions {
                 // setup executor
                 if (executor == null) executor = Executors.newFixedThreadPool(threadCount);
 
-                List<Callable<Quartet<Integer, Integer, Integer, Integer>>> threadList = new ArrayList<>();
+                List<Callable<Quartet<Double, Integer, Integer, Integer>>> threadList = new ArrayList<>();
                 int count = list.size() + 1;
                 for (int i = 0; i < threadCount; i++) {
                     threadList.add(optimumLocationOptimumXThread(list, box, (int) (((float) i / threadCount) * count),
                             (int) (((float) (i + 1) / threadCount) * count)));
                 }
 
-                Quartet<Integer, Integer, Integer, Integer> best;
+                Quartet<Double, Integer, Integer, Integer> best;
                 try {
                     // run threads
                     best = executor.invokeAll(threadList)
@@ -215,7 +215,7 @@ public class RepairFunctions {
             }
             // single thread mode
             else {
-                int bestScore = Integer.MAX_VALUE;
+                double bestScore = Double.POSITIVE_INFINITY;
 
                 // for every location
                 int listSize = list.size();
@@ -229,7 +229,7 @@ public class RepairFunctions {
                             // move x location
                             list.get(insertionIndex).setXStart(x);
 
-                            int score = list.calculateHeight();
+                            double score = list.calculateHeight(true);
                             if (score < bestScore) {
                                 bestScore = score;
                                 bestX = x;
@@ -273,13 +273,13 @@ public class RepairFunctions {
      * <li>the x location of the <code>Box</code> for the best solution found</li>
      * </ul>
      */
-    private static Callable<Quartet<Integer, Integer, Integer, Integer>> optimumLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound) {
+    private static Callable<Quartet<Double, Integer, Integer, Integer>> optimumLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound) {
         // clones objects so each thread has a copy
         final BoxList list = boxList.clone();
         final Box box = boxToAdd.clone();
 
         return () -> {
-            int bestScore = Integer.MAX_VALUE;
+            double bestScore = Double.POSITIVE_INFINITY;
             int bestX = 0;
             int bestRotation = 0;
             int bestIndex = 0;
@@ -295,7 +295,7 @@ public class RepairFunctions {
                         // move x location
                         list.get(insertionIndex).setXStart(x);
 
-                        int score = list.calculateHeight();
+                        double score = list.calculateHeight(true);
                         if (score < bestScore) {
                             bestScore = score;
                             bestX = x;
