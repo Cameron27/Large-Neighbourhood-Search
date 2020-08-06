@@ -1,7 +1,5 @@
 package org.compx556;
 
-import org.compx556.util.GlobalRandom;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,10 +26,6 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
 
     public int getObjectSize() {
         return objectSize;
-    }
-
-    public int getMinHeight() {
-        return minHeight;
     }
 
     public double calculateHeight(boolean optimiseForComparison) {
@@ -63,12 +57,10 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
         return highestPoint - (optimiseForComparison ? minHeight : 0);
     }
 
-    public void saveResult(File outFile) throws IOException {
-        saveResult(outFile, calculateHeight(false));
-    }
-
     public void saveResult(File outFile, double height) throws IOException {
         final int scale = 8;
+        final int background = 0x000000;
+        final int foreground = 0xAAAAAA;
 
         int imageWidth = objectSize * scale;
         int imageHeight = (int) (height * scale);
@@ -77,11 +69,7 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
         int[] heights = new int[objectSize];
 
         // set all pixels to white
-        Arrays.fill(pixels, 0xFFFFFFFF);
-
-        int red = GlobalRandom.nextInt(200);
-        int green = GlobalRandom.nextInt(200);
-        int blue = GlobalRandom.nextInt(200);
+        Arrays.fill(pixels, background);
 
         // for each box
         for (Box b : this) {
@@ -97,20 +85,25 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
                 heights[x] = boxHeight;
             }
 
-            // shuffle rgb value
-            red = (red + GlobalRandom.nextInt(30)) % 200;
-            green = (green + GlobalRandom.nextInt(25) + 20) % 200;
-            blue = (blue + GlobalRandom.nextInt(35) + 40) % 200;
-            int rgb = (red << 16) | (green << 8) | blue;
             // fill in all the pixels
             // x and y represent units in solution space
             for (int y = yLocation; y < boxHeight; y++) {
                 for (int x = b.getXStart(); x < b.getXFinish(); x++) {
                     // subX and subY represent the multiple pixels per unit
-                    for (int ySub = 0; ySub < 8; ySub++) {
-                        for (int xSub = 0; xSub < 8; xSub++) {
-                            pixels[(imageHeight - (y * scale + ySub) - 1) * imageWidth + x * scale + xSub] = rgb;
+                    for (int ySub = 0; ySub < scale; ySub++) {
+                        for (int xSub = 0; xSub < scale; xSub++) {
+                            int pixelIndex = (imageHeight - (y * scale + ySub) - 1) * imageWidth + x * scale + xSub;
+                            // if it is an edge
+                            if (y == yLocation && ySub == 0 ||
+                                    x == b.getXStart() && xSub == 0 ||
+                                    y == boxHeight - 1 && ySub == scale - 1 ||
+                                    x == b.getXFinish() - 1 && xSub == scale - 1)
+                                pixels[pixelIndex] = background;
+                                // otherwise
+                            else
+                                pixels[pixelIndex] = foreground;
                         }
+
                     }
                 }
             }
@@ -124,7 +117,7 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
         String extension = splitFileName[splitFileName.length - 1];
 
         // check file extension is valid
-        if (!Arrays.stream(ImageIO.getWriterFormatNames()).anyMatch(extension::equals)) {
+        if (Arrays.stream(ImageIO.getWriterFormatNames()).noneMatch(extension::equals)) {
             System.err.println("File extension is invalid.");
             return;
         }
@@ -135,11 +128,11 @@ public class BoxList extends ArrayList<Box> implements Cloneable {
 
     @Override
     public BoxList clone() {
-        BoxList output = new BoxList(objectSize, minHeight);
+        BoxList clone = (BoxList) super.clone();
+        clone.objectSize = objectSize;
+        clone.minHeight = minHeight;
 
-        output.addAll(this);
-
-        return output;
+        return clone;
     }
 
 
