@@ -5,18 +5,14 @@ import com.beust.jcommander.ParameterException;
 import org.compx556.function.*;
 import org.compx556.util.GlobalRandom;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.zip.DataFormatException;
 
 public class RectanglePacker {
     private BoxList initialState;
     private final AcceptanceFunction acceptanceFunction;
     private final InitialisationFunction initialisationFunction;
-    private final DestructionFunction destructionFunction;
-    private final RepairFunction repairFunction;
+    private final DestroyRepairSampler destroyRepairSampler;
     private final long maxTime;
     private final int threadCount;
     private final File outFile;
@@ -26,8 +22,8 @@ public class RectanglePacker {
 
         acceptanceFunction = config.acceptanceFunction;
         initialisationFunction = config.initialisationFunction;
-        destructionFunction = config.destructionFunction;
-        repairFunction = config.repairFunction;
+        destroyRepairSampler = new DestroyRepairSampler(config.destructionFunctions, config.repairFunctions,
+                config.destroyRepairPairs);
 
 
         maxTime = config.runtime;
@@ -50,7 +46,7 @@ public class RectanglePacker {
         // while there is time remaining
         while (System.currentTimeMillis() - startTime < maxTime) {
             // get neighbour
-            BoxList next = repairFunction.apply(destructionFunction.apply(current, 15), threadCount);
+            BoxList next = destroyRepairSampler.sampleAndApply(current, 15, threadCount);
             double nextHeight = next.calculateHeight(true);
 
             // check acceptance
@@ -137,8 +133,13 @@ public class RectanglePacker {
 
     public static void main(String[] args) {
         // create config
-        Config config = new Config(AcceptanceFunctions.hillClimb, InitialisationFunctions.random,
-                DestructionFunctions.randomNRemove, RepairFunctions.randomLocationOptimumX);
+        Config config = new Config(
+                AcceptanceFunctions.hillClimb,
+                InitialisationFunctions.random,
+                new DestructionFunction[]{DestructionFunctions.randomNRemove},
+                new RepairFunction[]{RepairFunctions.randomLocationOptimumX, RepairFunctions.optimumLocationOptimumX},
+                new int[][]{new int[]{0, 0}, new int[]{0, 1}}
+        );
 
         // parse args
         JCommander builder = JCommander.newBuilder()
@@ -146,7 +147,8 @@ public class RectanglePacker {
                 .build();
         try {
             builder.parse(args);
-        } catch (ParameterException e) {
+        } catch (
+                ParameterException e) {
             System.out.println(e.getMessage());
             e.usage();
             return;
@@ -163,6 +165,9 @@ public class RectanglePacker {
         RectanglePacker rectanglePacker = null;
         try {
             rectanglePacker = new RectanglePacker(config);
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found.");
+            return;
         } catch (IOException e) {
             System.err.println("Failed to load data from file.");
             return;

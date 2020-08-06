@@ -21,14 +21,19 @@ public class Config {
     public InitialisationFunction initialisationFunction;
 
     /**
-     * Destruction function to use in algorithm.
+     * Destruction functions available to use in algorithm.
      */
-    public DestructionFunction destructionFunction;
+    public DestructionFunction[] destructionFunctions;
 
     /**
-     * Repair function to use in algorithm.
+     * Repair functions available to use in algorithm.
      */
-    public RepairFunction repairFunction;
+    public RepairFunction[] repairFunctions;
+
+    /**
+     * Pairs of indices for valid destroy and repair function combinations.
+     */
+    public int[][] destroyRepairPairs;
 
     /**
      * File to read data from.
@@ -70,14 +75,18 @@ public class Config {
      * Created a <code>Config</code> with the specified functions.
      *
      * @param initialisationFunction the initialisation function
-     * @param destructionFunction    the destruction function
-     * @param repairFunction         the repair function
+     * @param destructionFunctions   the destruction functions available
+     * @param repairFunctions        the repairs functions available
+     * @param acceptanceFunction     the acceptance function
+     * @param destroyRepairPairs     the indices of valid destroy and repair function combinations
      */
     public Config(AcceptanceFunction acceptanceFunction, InitialisationFunction initialisationFunction,
-                  DestructionFunction destructionFunction, RepairFunction repairFunction) {
+                  DestructionFunction[] destructionFunctions, RepairFunction[] repairFunctions,
+                  int[][] destroyRepairPairs) {
         this.acceptanceFunction = acceptanceFunction;
         this.initialisationFunction = initialisationFunction;
-        this.destructionFunction = destructionFunction;
-        this.repairFunction = repairFunction;
+        this.destructionFunctions = destructionFunctions;
+        this.repairFunctions = repairFunctions;
+        this.destroyRepairPairs = destroyRepairPairs;
     }
 }
