@@ -37,16 +37,17 @@ public class RectanglePacker {
         double currentHeight = current.calculateHeight(true);
         double bestHeight = currentHeight;
 
-        double startTemp = 0.1;
-        double endTemp = 0;
-        double temp = startTemp;
+        double startTemperature = 0.1;
+        double endTemperature = 0;
+        double temp = startTemperature;
 
         long startTime = System.currentTimeMillis();
         int iterations = 0;
         // while there is time remaining
         while (System.currentTimeMillis() - startTime < maxTime) {
             // get neighbour
-            BoxList next = destroyRepairSampler.sampleAndApply(current, 15, threadCount);
+            int index = destroyRepairSampler.sampleRandomIndex();
+            BoxList next = destroyRepairSampler.apply(index, current, 15, threadCount);
             double nextHeight = next.calculateHeight(true);
 
             // check acceptance
@@ -63,9 +64,11 @@ public class RectanglePacker {
                 bestHeight = currentHeight;
             }
 
-            // update temp
+            destroyRepairSampler.updateWeighting(index, acceptanceLevel);
+
+            // update temperature
             double remainingTimeFraction = (maxTime - (System.currentTimeMillis() - startTime)) / (double) maxTime;
-            temp = (startTemp - endTemp) * remainingTimeFraction + endTemp;
+            temp = (startTemperature - endTemperature) * remainingTimeFraction + endTemperature;
             iterations++;
         }
 

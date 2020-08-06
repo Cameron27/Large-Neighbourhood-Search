@@ -17,22 +17,22 @@ public interface AcceptanceFunction {
     /**
      * Indicates next solution is better than the best solution.
      */
-    int BEST = 4;
+    int BEST = 3;
 
     /**
      * Indicates next solution is better than the current solution.
      */
-    int BETTER = 3;
+    int BETTER = 2;
 
     /**
      * Indicates next solution should be accepted.
      */
-    int ACCEPTED = 2;
+    int ACCEPTED = 1;
 
     /**
      * Indicates that next solution should be rejected.
      */
-    int REJECTED = 1;
+    int REJECTED = 0;
 
     /**
      * Apply the function.
