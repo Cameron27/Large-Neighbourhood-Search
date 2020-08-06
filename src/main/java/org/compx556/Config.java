@@ -44,7 +44,8 @@ public class Config {
     /**
      * File to save result image to.
      */
-    @Parameter(names = {"-o", "-output"}, description = "Name of file to save result image as", converter = FileConverter.class)
+    @Parameter(names = {"-o", "-output"}, description = "Name of file to save result image as, image will not be " +
+            "saved if not set", converter = FileConverter.class)
     public File outFile;
 
     /**
@@ -64,6 +65,9 @@ public class Config {
      */
     @Parameter(names = {"-t", "-time"}, description = "Max runtime in milliseconds")
     public long runtime = 10000;
+
+    @Parameter(names = {"-stats"}, hidden = true, description = "Whether or not adaptive stats should be printed")
+    public boolean printStats = false;
 
     /**
      * Whether or not help be displayed.

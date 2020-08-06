@@ -9,13 +9,14 @@ import java.io.*;
 import java.util.zip.DataFormatException;
 
 public class RectanglePacker {
-    private BoxList initialState;
+    private final BoxList initialState;
     private final AcceptanceFunction acceptanceFunction;
     private final InitialisationFunction initialisationFunction;
     private final DestroyRepairSampler destroyRepairSampler;
     private final long maxTime;
     private final int threadCount;
     private final File outFile;
+    private final boolean printStats;
 
     public RectanglePacker(Config config) throws IOException, DataFormatException {
         initialState = parseDataFile(config.dataFile);
@@ -29,6 +30,7 @@ public class RectanglePacker {
         maxTime = config.runtime;
         threadCount = config.threadCount;
         outFile = config.outFile;
+        printStats = config.printStats;
     }
 
     public int solve() {
@@ -81,6 +83,10 @@ public class RectanglePacker {
                 System.err.println("Failed to save output as image.");
             }
         }
+
+        // print stats if required
+        if (printStats)
+            System.out.println(destroyRepairSampler.statsString());
 
         return finalHeight;
     }
@@ -165,7 +171,7 @@ public class RectanglePacker {
         if (config.seed != null) GlobalRandom.setSeed(config.seed);
 
         // create packer
-        RectanglePacker rectanglePacker = null;
+        RectanglePacker rectanglePacker;
         try {
             rectanglePacker = new RectanglePacker(config);
         } catch (FileNotFoundException e) {

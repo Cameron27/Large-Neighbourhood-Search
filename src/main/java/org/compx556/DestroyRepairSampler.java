@@ -37,6 +37,7 @@ public class DestroyRepairSampler {
      */
     private final double[] weights;
 
+    private final int[][] resultHistories;
 
     /**
      * Created a <code>DestroyRepairSampler</code> with the specified functions.
@@ -54,6 +55,10 @@ public class DestroyRepairSampler {
         // set all initial weights to 1
         this.weights = new double[destroyRepairPairs.length];
         Arrays.fill(weights, 1);
+
+        // create result history for each destroy and repair function combinations
+        this.resultHistories = new int[destroyRepairPairs.length][];
+        Arrays.setAll(resultHistories, i -> new int[4]);
 
         // check indices are all in bounds
         for (int i = 0; i < destroyRepairPairs.length; i++) {
@@ -129,6 +134,35 @@ public class DestroyRepairSampler {
      * @param acceptanceLevel acceptance level obtained from using destroy and repair function combination
      */
     public void updateWeighting(int index, int acceptanceLevel) {
+        // record result
+        resultHistories[index][acceptanceLevel]++;
+
+        // update weight
         weights[index] = bias * weights[index] + (1 - bias) * scores[acceptanceLevel];
+    }
+
+    /**
+     * Generate a string with all the stats for each destroy and repair function combination.
+     *
+     * @return generated string
+     */
+    public String statsString() {
+        StringBuilder s = new StringBuilder();
+
+        s.append("[");
+
+        // add all results
+        for (int[] resultHistory : resultHistories) {
+            s.append(String.format("{\"BEST\":%d,\"BETTER\":%d,\"ACCEPTED\":%d,\"REJECTED\":%d},",
+                    resultHistory[3], resultHistory[2], resultHistory[1], resultHistory[0]));
+        }
+
+        // remove final ','
+        if (resultHistories.length > 1)
+            s.deleteCharAt(s.length() - 1);
+
+        s.append("]");
+
+        return s.toString();
     }
 }
