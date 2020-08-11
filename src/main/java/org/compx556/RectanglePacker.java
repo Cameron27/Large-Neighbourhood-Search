@@ -39,7 +39,7 @@ public class RectanglePacker {
         double currentHeight = current.calculateHeight(true);
         double bestHeight = currentHeight;
 
-        double startTemperature = 0.1;
+        double startTemperature = acceptanceFunction.initialTemperature(currentHeight, 0.1);
         double endTemperature = 0;
         double temp = startTemperature;
 
@@ -143,7 +143,7 @@ public class RectanglePacker {
     public static void main(String[] args) {
         // create config
         Config config = new Config(
-                AcceptanceFunctions.hillClimb,
+                AcceptanceFunctions.simulatedAnnealing,
                 InitialisationFunctions.random,
                 new DestructionFunction[]{DestructionFunctions.randomNRemove},
                 new RepairFunction[]{RepairFunctions.randomLocationOptimumX, RepairFunctions.optimumLocationOptimumX},
