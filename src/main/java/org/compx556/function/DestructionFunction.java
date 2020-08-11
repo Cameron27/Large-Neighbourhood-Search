@@ -20,15 +20,21 @@ import java.util.List;
  * <code>Box</code> objects (in order if relevant).
  * </p>
  */
-@FunctionalInterface
-public interface DestructionFunction {
+public abstract class DestructionFunction {
+    /**
+     * Gets the name of the destruction function.
+     *
+     * @return the name of the destruction function
+     */
+    public abstract String getName();
+
     /**
      * Apply the function.
      *
-     * @param boxList solution to destroy
-     * @param n       number of <code>Box</code> elements to remove
+     * @param solution solution to destroy
+     * @param n        number of <code>Box</code> elements to remove
      * @return a <code>Pair</code> containing:
      * <ul><li>the new partial solution</li><li>the removed <code>Box</code> elements</li></ul>
      */
-    Pair<BoxList, List<Box>> apply(BoxList boxList, int n);
+    public abstract Pair<BoxList, List<Box>> apply(BoxList solution, int n);
 }
