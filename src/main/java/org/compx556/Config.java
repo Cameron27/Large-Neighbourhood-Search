@@ -21,14 +21,19 @@ public class Config {
     public InitialisationFunction initialisationFunction;
 
     /**
-     * Destruction function to use in algorithm.
+     * Destruction functions available to use in algorithm.
      */
-    public DestructionFunction destructionFunction;
+    public DestructionFunction[] destructionFunctions;
 
     /**
-     * Repair function to use in algorithm.
+     * Repair functions available to use in algorithm.
      */
-    public RepairFunction repairFunction;
+    public RepairFunction[] repairFunctions;
+
+    /**
+     * Pairs of indices for valid destroy and repair function combinations.
+     */
+    public int[][] destroyRepairPairs;
 
     /**
      * File to read data from.
@@ -39,7 +44,8 @@ public class Config {
     /**
      * File to save result image to.
      */
-    @Parameter(names = {"-o", "-output"}, description = "Name of file to save result image as", converter = FileConverter.class)
+    @Parameter(names = {"-o", "-output"}, description = "Name of file to save result image as, image will not be " +
+            "saved if not set", converter = FileConverter.class)
     public File outFile;
 
     /**
@@ -60,6 +66,9 @@ public class Config {
     @Parameter(names = {"-t", "-time"}, description = "Max runtime in milliseconds")
     public long runtime = 10000;
 
+    @Parameter(names = {"-stats"}, hidden = true, description = "Whether or not adaptive stats should be printed")
+    public boolean printStats = false;
+
     /**
      * Whether or not help be displayed.
      */
@@ -70,14 +79,18 @@ public class Config {
      * Created a <code>Config</code> with the specified functions.
      *
      * @param initialisationFunction the initialisation function
-     * @param destructionFunction    the destruction function
-     * @param repairFunction         the repair function
+     * @param destructionFunctions   the destruction functions available
+     * @param repairFunctions        the repairs functions available
+     * @param acceptanceFunction     the acceptance function
+     * @param destroyRepairPairs     the indices of valid destroy and repair function combinations
      */
     public Config(AcceptanceFunction acceptanceFunction, InitialisationFunction initialisationFunction,
-                  DestructionFunction destructionFunction, RepairFunction repairFunction) {
+                  DestructionFunction[] destructionFunctions, RepairFunction[] repairFunctions,
+                  int[][] destroyRepairPairs) {
         this.acceptanceFunction = acceptanceFunction;
         this.initialisationFunction = initialisationFunction;
-        this.destructionFunction = destructionFunction;
-        this.repairFunction = repairFunction;
+        this.destructionFunctions = destructionFunctions;
+        this.repairFunctions = repairFunctions;
+        this.destroyRepairPairs = destroyRepairPairs;
     }
 }

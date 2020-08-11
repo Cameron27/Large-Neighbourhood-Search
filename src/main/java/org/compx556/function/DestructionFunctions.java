@@ -12,16 +12,24 @@ public class DestructionFunctions {
     /**
      * Removes a number of <code>Box</code> objects randomly from the solution.
      */
-    public static final DestructionFunction randomNRemove = (list, n) -> {
-        // create new lists
-        BoxList remaining = list.clone();
-        List<Box> removed = new ArrayList<>();
-
-        // randomly remove n boxes
-        for (int i = 0; i < n; i++) {
-            removed.add(remaining.remove(GlobalRandom.nextInt(remaining.size())));
+    public static final DestructionFunction randomNRemove = new DestructionFunction() {
+        @Override
+        public String getName() {
+            return "Random n Remove";
         }
 
-        return new Pair<>(remaining, removed);
+        @Override
+        public Pair<BoxList, List<Box>> apply(BoxList solution, int n) {
+            // create new lists
+            BoxList remaining = solution.clone();
+            List<Box> removed = new ArrayList<>();
+
+            // randomly remove n boxes
+            for (int i = 0; i < n; i++) {
+                removed.add(remaining.remove(GlobalRandom.nextInt(remaining.size())));
+            }
+
+            return new Pair<>(remaining, removed);
+        }
     };
 }

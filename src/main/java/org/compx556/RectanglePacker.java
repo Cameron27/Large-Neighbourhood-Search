@@ -5,34 +5,32 @@ import com.beust.jcommander.ParameterException;
 import org.compx556.function.*;
 import org.compx556.util.GlobalRandom;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.zip.DataFormatException;
 
 public class RectanglePacker {
-    private BoxList initialState;
+    private final BoxList initialState;
     private final AcceptanceFunction acceptanceFunction;
     private final InitialisationFunction initialisationFunction;
-    private final DestructionFunction destructionFunction;
-    private final RepairFunction repairFunction;
+    private final DestroyRepairSampler destroyRepairSampler;
     private final long maxTime;
     private final int threadCount;
     private final File outFile;
+    private final boolean printStats;
 
     public RectanglePacker(Config config) throws IOException, DataFormatException {
         initialState = parseDataFile(config.dataFile);
 
         acceptanceFunction = config.acceptanceFunction;
         initialisationFunction = config.initialisationFunction;
-        destructionFunction = config.destructionFunction;
-        repairFunction = config.repairFunction;
+        destroyRepairSampler = new DestroyRepairSampler(config.destructionFunctions, config.repairFunctions,
+                config.destroyRepairPairs);
 
 
         maxTime = config.runtime;
         threadCount = config.threadCount;
         outFile = config.outFile;
+        printStats = config.printStats;
     }
 
     public int solve() {
@@ -41,16 +39,17 @@ public class RectanglePacker {
         double currentHeight = current.calculateHeight(true);
         double bestHeight = currentHeight;
 
-        double startTemp = 0.1;
-        double endTemp = 0;
-        double temp = startTemp;
+        double startTemperature = acceptanceFunction.initialTemperature(currentHeight, 0.1);
+        double endTemperature = 0;
+        double temp = startTemperature;
 
         long startTime = System.currentTimeMillis();
         int iterations = 0;
         // while there is time remaining
         while (System.currentTimeMillis() - startTime < maxTime) {
             // get neighbour
-            BoxList next = repairFunction.apply(destructionFunction.apply(current, 15), threadCount);
+            int index = destroyRepairSampler.sampleRandomIndex();
+            BoxList next = destroyRepairSampler.apply(index, current, 15, threadCount);
             double nextHeight = next.calculateHeight(true);
 
             // check acceptance
@@ -67,9 +66,11 @@ public class RectanglePacker {
                 bestHeight = currentHeight;
             }
 
-            // update temp
+            destroyRepairSampler.updateWeighting(index, acceptanceLevel);
+
+            // update temperature
             double remainingTimeFraction = (maxTime - (System.currentTimeMillis() - startTime)) / (double) maxTime;
-            temp = (startTemp - endTemp) * remainingTimeFraction + endTemp;
+            temp = (startTemperature - endTemperature) * remainingTimeFraction + endTemperature;
             iterations++;
         }
 
@@ -82,6 +83,10 @@ public class RectanglePacker {
                 System.err.println("Failed to save output as image.");
             }
         }
+
+        // print stats if required
+        if (printStats)
+            System.out.println(destroyRepairSampler.statsString());
 
         return finalHeight;
     }
@@ -137,8 +142,13 @@ public class RectanglePacker {
 
     public static void main(String[] args) {
         // create config
-        Config config = new Config(AcceptanceFunctions.hillClimb, InitialisationFunctions.random,
-                DestructionFunctions.randomNRemove, RepairFunctions.randomLocationOptimumX);
+        Config config = new Config(
+                AcceptanceFunctions.hillClimb,
+                InitialisationFunctions.random,
+                new DestructionFunction[]{DestructionFunctions.randomNRemove},
+                new RepairFunction[]{RepairFunctions.randomLocationOptimumX, RepairFunctions.optimumLocationOptimumX},
+                new int[][]{new int[]{0, 0}, new int[]{0, 1}}
+        );
 
         // parse args
         JCommander builder = JCommander.newBuilder()
@@ -146,7 +156,8 @@ public class RectanglePacker {
                 .build();
         try {
             builder.parse(args);
-        } catch (ParameterException e) {
+        } catch (
+                ParameterException e) {
             System.out.println(e.getMessage());
             e.usage();
             return;
@@ -160,9 +171,12 @@ public class RectanglePacker {
         if (config.seed != null) GlobalRandom.setSeed(config.seed);
 
         // create packer
-        RectanglePacker rectanglePacker = null;
+        RectanglePacker rectanglePacker;
         try {
             rectanglePacker = new RectanglePacker(config);
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found.");
+            return;
         } catch (IOException e) {
             System.err.println("Failed to load data from file.");
             return;

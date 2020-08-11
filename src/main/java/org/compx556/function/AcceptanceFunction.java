@@ -12,27 +12,33 @@ package org.compx556.function;
  * The output should be an <code>int</code> representing the level of acceptance.
  * </p>
  */
-@FunctionalInterface
-public interface AcceptanceFunction {
+public abstract class AcceptanceFunction {
     /**
      * Indicates next solution is better than the best solution.
      */
-    int BEST = 4;
+    public static int BEST = 3;
 
     /**
      * Indicates next solution is better than the current solution.
      */
-    int BETTER = 3;
+    public static int BETTER = 2;
 
     /**
      * Indicates next solution should be accepted.
      */
-    int ACCEPTED = 2;
+    public static int ACCEPTED = 1;
 
     /**
      * Indicates that next solution should be rejected.
      */
-    int REJECTED = 1;
+    public static int REJECTED = 0;
+
+    /**
+     * Gets the name of the acceptance function.
+     *
+     * @return the name of the acceptance function
+     */
+    public abstract String getName();
 
     /**
      * Apply the function.
@@ -43,5 +49,14 @@ public interface AcceptanceFunction {
      * @param temperature current temperature
      * @return acceptance level
      */
-    int apply(double next, double current, double best, double temperature);
+    public abstract int apply(double next, double current, double best, double temperature);
+
+    /**
+     * Calculate the starting temperature for this acceptance function.
+     *
+     * @param initialScore the score of the initial randomly generated solution
+     * @param h            base threshold, the meaning of this depends on the acceptance function.
+     * @return initial temperature
+     */
+    public abstract double initialTemperature(double initialScore, double h);
 }

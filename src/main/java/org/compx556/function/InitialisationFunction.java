@@ -12,14 +12,20 @@ import org.compx556.BoxList;
  * The output should be a <code>BoxList</code> representing the new complete solution after reshuffling it in some way.
  * </p>
  */
-@FunctionalInterface
-public interface InitialisationFunction {
+public abstract class InitialisationFunction {
+    /**
+     * Gets the name of the initialisation function.
+     *
+     * @return the name of the initialisation function
+     */
+    public abstract String getName();
+
     /**
      * Apply the function.
      *
-     * @param boxList a <code>BoxList</code> containing the <code>Box</code>> elements to generate the initial solution
-     *                from
+     * @param solution a <code>BoxList</code> containing the <code>Box</code>> elements to generate the initial solution
+     *                 from
      * @return the initial solution
      */
-    BoxList apply(BoxList boxList);
+    public abstract BoxList apply(BoxList solution);
 }
