@@ -143,7 +143,7 @@ public class RectanglePacker {
     public static void main(String[] args) {
         // create config
         Config config = new Config(
-                AcceptanceFunctions.simulatedAnnealing,
+                AcceptanceFunctions.hillClimb,
                 InitialisationFunctions.random,
                 new DestructionFunction[]{DestructionFunctions.randomNRemove},
                 new RepairFunction[]{RepairFunctions.randomLocationOptimumX, RepairFunctions.optimumLocationOptimumX},
