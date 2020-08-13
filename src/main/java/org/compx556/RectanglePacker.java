@@ -9,6 +9,16 @@ import java.io.*;
 import java.util.zip.DataFormatException;
 
 public class RectanglePacker {
+    public static Config defaultConfig = new Config(
+            AcceptanceFunctions.hillClimb,
+            InitialisationFunctions.random,
+            new DestructionFunction[]{DestructionFunctions.randomNRemove},
+            new RepairFunction[]{RepairFunctions.randomLocationOptimumX, RepairFunctions.optimumLocationOptimumX},
+            new int[][]{new int[]{0, 0}, new int[]{0, 1}},
+            0.15,
+            0.1
+    );
+
     private final BoxList initialState;
     private final AcceptanceFunction acceptanceFunction;
     private final InitialisationFunction initialisationFunction;
@@ -17,6 +27,8 @@ public class RectanglePacker {
     private final int threadCount;
     private final File outFile;
     private final boolean printStats;
+    private final int n;
+    private final double initialTemperatureParameter;
 
     public RectanglePacker(Config config) throws IOException, DataFormatException {
         initialState = parseDataFile(config.dataFile);
@@ -31,6 +43,8 @@ public class RectanglePacker {
         threadCount = config.threadCount;
         outFile = config.outFile;
         printStats = config.printStats;
+        n = (int) (config.destructionProportion * initialState.size());
+        initialTemperatureParameter = config.initialTemperatureParameter;
     }
 
     public int solve() {
@@ -39,7 +53,7 @@ public class RectanglePacker {
         double currentHeight = current.calculateHeight(true);
         double bestHeight = currentHeight;
 
-        double startTemperature = acceptanceFunction.initialTemperature(currentHeight, 0.1);
+        double startTemperature = acceptanceFunction.initialTemperature(currentHeight, initialTemperatureParameter);
         double endTemperature = 0;
         double temp = startTemperature;
 
@@ -49,7 +63,7 @@ public class RectanglePacker {
         while (System.currentTimeMillis() - startTime < maxTime) {
             // get neighbour
             int index = destroyRepairSampler.sampleRandomIndex();
-            BoxList next = destroyRepairSampler.apply(index, current, 15, threadCount);
+            BoxList next = destroyRepairSampler.apply(index, current, n, threadCount);
             double nextHeight = next.calculateHeight(true);
 
             // check acceptance
@@ -142,13 +156,7 @@ public class RectanglePacker {
 
     public static void main(String[] args) {
         // create config
-        Config config = new Config(
-                AcceptanceFunctions.hillClimb,
-                InitialisationFunctions.random,
-                new DestructionFunction[]{DestructionFunctions.randomNRemove},
-                new RepairFunction[]{RepairFunctions.randomLocationOptimumX, RepairFunctions.optimumLocationOptimumX},
-                new int[][]{new int[]{0, 0}, new int[]{0, 1}}
-        );
+        Config config = defaultConfig.clone();
 
         // parse args
         JCommander builder = JCommander.newBuilder()

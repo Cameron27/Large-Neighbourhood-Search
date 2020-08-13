@@ -9,7 +9,7 @@ import org.compx556.function.RepairFunction;
 
 import java.io.File;
 
-public class Config {
+public class Config implements Cloneable {
     /**
      * Acceptance function to use in algorithm.
      */
@@ -34,6 +34,17 @@ public class Config {
      * Pairs of indices for valid destroy and repair function combinations.
      */
     public int[][] destroyRepairPairs;
+
+    /**
+     * The proportion of elements that should be removed during each destruction stage, 0 is remove none, 1 is remove
+     * everything.
+     */
+    public double destructionProportion;
+
+    /**
+     * The parameter used to generate the initial temperature.
+     */
+    public double initialTemperatureParameter;
 
     /**
      * File to read data from.
@@ -86,11 +97,33 @@ public class Config {
      */
     public Config(AcceptanceFunction acceptanceFunction, InitialisationFunction initialisationFunction,
                   DestructionFunction[] destructionFunctions, RepairFunction[] repairFunctions,
-                  int[][] destroyRepairPairs) {
+                  int[][] destroyRepairPairs, double destructionProportion, double initialTemperatureParameter) {
         this.acceptanceFunction = acceptanceFunction;
         this.initialisationFunction = initialisationFunction;
         this.destructionFunctions = destructionFunctions;
         this.repairFunctions = repairFunctions;
         this.destroyRepairPairs = destroyRepairPairs;
+        this.destructionProportion = destructionProportion;
+        this.initialTemperatureParameter = initialTemperatureParameter;
+    }
+
+    @Override
+    public Config clone() {
+        Config clone = new Config(acceptanceFunction,
+                initialisationFunction,
+                destructionFunctions,
+                repairFunctions,
+                destroyRepairPairs,
+                destructionProportion,
+                initialTemperatureParameter);
+        clone.dataFile = dataFile;
+        clone.outFile = outFile;
+        clone.seed = seed;
+        clone.threadCount = threadCount;
+        clone.runtime = runtime;
+        clone.printStats = printStats;
+        clone.help = help;
+
+        return clone;
     }
 }
