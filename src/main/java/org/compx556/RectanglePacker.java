@@ -91,7 +91,7 @@ public class RectanglePacker {
         return finalHeight;
     }
 
-    static BoxList parseDataFile(File file) throws IOException, DataFormatException {
+    public static BoxList parseDataFile(File file) throws IOException, DataFormatException {
         BoxList initialList = null;
 
         FileReader fr = new FileReader(file);

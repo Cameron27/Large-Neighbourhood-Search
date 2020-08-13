@@ -1,8 +1,8 @@
-package org.compx556;
+package org.compx556.function;
 
-import org.compx556.function.DestructionFunctions;
-import org.compx556.function.InitialisationFunctions;
-import org.compx556.function.RepairFunctions;
+import org.compx556.Box;
+import org.compx556.BoxList;
+import org.compx556.RectanglePacker;
 import org.compx556.util.GlobalRandom;
 import org.javatuples.Pair;
 import org.junit.Before;
@@ -31,7 +31,7 @@ public class RepairFunctionsTest {
         BoxList destroyedListBackup = destroyedList.getValue0().deepClone();
 
         GlobalRandom.setSeed(50L);
-        BoxList repairedList = RepairFunctions.randomLocationOptimumX.apply(destroyedList, 1);
+        BoxList repairedList = RepairFunctions.randomLocationOptimumX.applyPartial(destroyedList, 1);
 
         // check immutable
         assertEquals(destroyedList.getValue0(), destroyedListBackup);
@@ -42,14 +42,14 @@ public class RepairFunctionsTest {
         // check deterministic based on seed
         for (int i = 0; i < 10; i++) {
             GlobalRandom.setSeed(50L);
-            BoxList repairedList2 = RepairFunctions.randomLocationOptimumX.apply(destroyedList, 1);
+            BoxList repairedList2 = RepairFunctions.randomLocationOptimumX.applyPartial(destroyedList, 1);
             assertEquals(repairedList2, repairedList);
         }
 
         // check multi threaded mode gives same result
         for (int i = 0; i < 10; i++) {
             GlobalRandom.setSeed(50L);
-            BoxList repairedList3 = RepairFunctions.randomLocationOptimumX.apply(destroyedList, 12);
+            BoxList repairedList3 = RepairFunctions.randomLocationOptimumX.applyPartial(destroyedList, 12);
             assertEquals(repairedList3, repairedList);
         }
     }
@@ -61,7 +61,7 @@ public class RepairFunctionsTest {
         BoxList destroyedListBackup = destroyedList.getValue0().deepClone();
 
         GlobalRandom.setSeed(50L);
-        BoxList repairedList = RepairFunctions.optimumLocationOptimumX.apply(destroyedList, 1);
+        BoxList repairedList = RepairFunctions.optimumLocationOptimumX.applyPartial(destroyedList, 1);
 
         // check immutable
         assertEquals(destroyedList.getValue0(), destroyedListBackup);
@@ -72,14 +72,14 @@ public class RepairFunctionsTest {
         // check deterministic based on seed
         for (int i = 0; i < 10; i++) {
             GlobalRandom.setSeed(50L);
-            BoxList repairedList2 = RepairFunctions.optimumLocationOptimumX.apply(destroyedList, 1);
+            BoxList repairedList2 = RepairFunctions.optimumLocationOptimumX.applyPartial(destroyedList, 1);
             assertEquals(repairedList2, repairedList);
         }
 
         // check multi threaded mode gives same result
         for (int i = 0; i < 10; i++) {
             GlobalRandom.setSeed(50L);
-            BoxList repairedList3 = RepairFunctions.optimumLocationOptimumX.apply(destroyedList, 12);
+            BoxList repairedList3 = RepairFunctions.optimumLocationOptimumX.applyPartial(destroyedList, 12);
             assertEquals(repairedList3, repairedList);
         }
     }

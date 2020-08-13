@@ -1,7 +1,8 @@
-package org.compx556;
+package org.compx556.function;
 
-import org.compx556.function.DestructionFunctions;
-import org.compx556.function.InitialisationFunctions;
+import org.compx556.Box;
+import org.compx556.BoxList;
+import org.compx556.RectanglePacker;
 import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
