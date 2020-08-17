@@ -3,8 +3,11 @@ package org.compx556.function;
 import org.compx556.Box;
 import org.compx556.BoxList;
 import org.compx556.util.GlobalRandom;
+import org.javatuples.Pair;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class InitialisationFunctions {
     /**
@@ -36,6 +39,26 @@ public class InitialisationFunctions {
             }
 
             return output;
+        }
+    };
+
+    /**
+     * Inserts each <code>Box</code> element into the solution using the <code>optimumLocationOptimumX</code> repair
+     * function.
+     */
+    public static final InitialisationFunction greedy = new InitialisationFunction() {
+        @Override
+        public String getName() {
+            return "Greedy";
+        }
+
+        @Override
+        public BoxList apply(BoxList solution) {
+            BoxList output = solution.clone();
+            output.clear();
+            List<Box> missing = new ArrayList<>(solution);
+
+            return RepairFunctions.optimumLocationOptimumX.apply(new Pair<>(output, missing), 1);
         }
     };
 }

@@ -11,7 +11,7 @@ import java.util.zip.DataFormatException;
 public class RectanglePacker {
     public static Config defaultConfig = new Config(
             AcceptanceFunctions.recordToRecord,
-            InitialisationFunctions.random,
+            InitialisationFunctions.greedy,
             new DestructionFunction[]{
                     DestructionFunctions.randomNRemove,
                     DestructionFunctions.blockNRemove},
