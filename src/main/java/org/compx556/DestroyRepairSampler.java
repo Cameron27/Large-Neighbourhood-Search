@@ -52,6 +52,11 @@ public class DestroyRepairSampler {
         this.repairFunctions = repairFunctions;
         this.destroyRepairPairs = destroyRepairPairs;
 
+        // reset any thread overriding metrics for repair functions
+        for (RepairFunction repairFunction : repairFunctions) {
+            repairFunction.resetThreadOverriding();
+        }
+
         // set all initial weights to 1
         this.weights = new double[destroyRepairPairs.length];
         Arrays.fill(weights, 1);

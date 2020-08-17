@@ -131,4 +131,12 @@ public abstract class RepairFunction {
             multiThreadScore = score;
         }
     }
+
+    /**
+     * Resets the scores for single threaded and multithreaded modes.
+     */
+    public void resetThreadOverriding() {
+        singleThreadScore = -1;
+        multiThreadScore = -1;
+    }
 }
