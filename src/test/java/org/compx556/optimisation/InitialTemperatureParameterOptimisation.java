@@ -26,7 +26,7 @@ public class InitialTemperatureParameterOptimisation {
         // datasets to test on
         String[] testFiles = new String[]{"/m1a.csv", "/m2c.csv", "/m3d.csv"};
         // runtime for each dataset
-        int[] runtimes = new int[]{20000, 30000, 40000};
+        int[] runtimes = new int[]{60000, 90000, 120000};
 
         // for each file
         for (int i = 0; i < testFiles.length; i++) {
