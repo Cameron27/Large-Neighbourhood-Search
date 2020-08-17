@@ -10,11 +10,21 @@ import java.util.zip.DataFormatException;
 
 public class RectanglePacker {
     public static Config defaultConfig = new Config(
-            AcceptanceFunctions.hillClimb,
+            AcceptanceFunctions.recordToRecord,
             InitialisationFunctions.random,
-            new DestructionFunction[]{DestructionFunctions.randomNRemove},
-            new RepairFunction[]{RepairFunctions.randomLocationOptimumX, RepairFunctions.optimumLocationOptimumX},
-            new int[][]{new int[]{0, 0}, new int[]{0, 1}},
+            new DestructionFunction[]{
+                    DestructionFunctions.randomNRemove,
+                    DestructionFunctions.blockNRemove},
+            new RepairFunction[]{
+                    RepairFunctions.randomLocationOptimumX,
+                    RepairFunctions.optimumLocationOptimumX,
+                    RepairFunctions.optimumBlockLocation},
+            new int[][]{
+                    new int[]{0, 0},
+                    new int[]{0, 1},
+                    new int[]{1, 0},
+                    new int[]{1, 1},
+                    new int[]{1, 2}},
             0.15,
             0.1
     );

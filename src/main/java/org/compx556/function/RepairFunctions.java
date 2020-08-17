@@ -291,5 +291,51 @@ public class RepairFunctions {
             };
         }
     };
+
+    /**
+     * Inserts all <code>Box</code> objects as a contiguous set into the best position to minimises the height of the
+     * solution. The x values, rotation and order of the <code>Box</code> objects will not be changed
+     */
+    public static RepairFunction optimumBlockLocation = new RepairFunction() {
+        @Override
+        public String getName() {
+            return "Optimum Block Location";
+        }
+
+        @Override
+        protected BoxList applyPartial(Pair<BoxList, List<Box>> boxesPair, int threadCount) {
+            BoxList list = boxesPair.getValue0().clone();
+            List<Box> missing = new ArrayList<>(boxesPair.getValue1());
+            BoxList temp = list.clone();
+
+            double bestHeight = Double.POSITIVE_INFINITY;
+            int bestIndex = 0;
+            for (int startIndex = 0; startIndex <= list.size(); startIndex++) {
+                for (int i = 0; i < missing.size(); i++) {
+                    Box box = missing.get(i);
+
+                    list.add(startIndex + i, box);
+                }
+
+                double height = list.calculateHeight(true);
+                if (height < bestHeight) {
+                    bestHeight = height;
+                    bestIndex = startIndex;
+                }
+
+                for (int i = 0; i < missing.size(); i++) {
+                    list.remove(startIndex);
+                }
+            }
+
+            for (int i = 0; i < missing.size(); i++) {
+                Box box = missing.get(i);
+
+                list.add(bestIndex + i, box);
+            }
+
+            return list;
+        }
+    };
 }
 

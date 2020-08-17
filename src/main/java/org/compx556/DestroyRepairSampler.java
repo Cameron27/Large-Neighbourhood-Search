@@ -157,8 +157,18 @@ public class DestroyRepairSampler {
         s.append("[");
 
         // add all results
-        for (int[] resultHistory : resultHistories) {
-            s.append(String.format("{\"BEST\":%d,\"BETTER\":%d,\"ACCEPTED\":%d,\"REJECTED\":%d},",
+        for (int i = 0; i < resultHistories.length; i++) {
+            int[] resultHistory = resultHistories[i];
+
+            s.append(String.format("\n\t{\n" +
+                            "\t\t\"Name\":\"%s + %s\",\n" +
+                            "\t\t\"BEST\":%d,\n" +
+                            "\t\t\"BETTER\":%d,\n" +
+                            "\t\t\"ACCEPTED\":%d,\n" +
+                            "\t\t\"REJECTED\":%d\n" +
+                            "\t},",
+                    destructionFunctions[destroyRepairPairs[i][0]].getName(),
+                    repairFunctions[destroyRepairPairs[i][1]].getName(),
                     resultHistory[3], resultHistory[2], resultHistory[1], resultHistory[0]));
         }
 
@@ -166,7 +176,7 @@ public class DestroyRepairSampler {
         if (resultHistories.length > 1)
             s.deleteCharAt(s.length() - 1);
 
-        s.append("]");
+        s.append("\n]");
 
         return s.toString();
     }
