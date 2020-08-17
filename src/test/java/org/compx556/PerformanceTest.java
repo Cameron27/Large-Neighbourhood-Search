@@ -43,6 +43,7 @@ public class PerformanceTest {
 
         for (int i = 0; i < count; i++) {
             results[i] = rectanglePacker.solve();
+            System.out.println(i + ": " + results[i]);
         }
 
         double average = Arrays.stream(results).average().getAsDouble();

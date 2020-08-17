@@ -32,7 +32,9 @@ public class RectanglePacker {
     private final BoxList initialState;
     private final AcceptanceFunction acceptanceFunction;
     private final InitialisationFunction initialisationFunction;
-    private final DestroyRepairSampler destroyRepairSampler;
+    private final DestructionFunction[] destructionFunctions;
+    private final RepairFunction[] repairFunctions;
+    private final int[][] destroyRepairPairs;
     private final long maxTime;
     private final int threadCount;
     private final File outFile;
@@ -40,14 +42,18 @@ public class RectanglePacker {
     private final int n;
     private final double initialTemperatureParameter;
 
+    private DestroyRepairSampler destroyRepairSampler;
+
     public RectanglePacker(Config config) throws IOException, DataFormatException {
+        // load data
         initialState = parseDataFile(config.dataFile);
 
+        // get data from config
         acceptanceFunction = config.acceptanceFunction;
         initialisationFunction = config.initialisationFunction;
-        destroyRepairSampler = new DestroyRepairSampler(config.destructionFunctions, config.repairFunctions,
-                config.destroyRepairPairs);
-
+        destructionFunctions = config.destructionFunctions;
+        repairFunctions = config.repairFunctions;
+        destroyRepairPairs = config.destroyRepairPairs;
 
         maxTime = config.runtime;
         threadCount = config.threadCount;
@@ -58,6 +64,9 @@ public class RectanglePacker {
     }
 
     public int solve() {
+        // reset destroy repair sampler
+        destroyRepairSampler = new DestroyRepairSampler(destructionFunctions, repairFunctions, destroyRepairPairs);
+
         BoxList current = initialisationFunction.apply(initialState);
         BoxList best = current;
         double currentHeight = current.calculateHeight(true);
@@ -68,7 +77,6 @@ public class RectanglePacker {
         double temp = startTemperature;
 
         long startTime = System.currentTimeMillis();
-        int iterations = 0;
         // while there is time remaining
         while (System.currentTimeMillis() - startTime < maxTime) {
             // get neighbour
@@ -95,7 +103,6 @@ public class RectanglePacker {
             // update temperature
             double remainingTimeFraction = (maxTime - (System.currentTimeMillis() - startTime)) / (double) maxTime;
             temp = (startTemperature - endTemperature) * remainingTimeFraction + endTemperature;
-            iterations++;
         }
 
         int finalHeight = (int) best.calculateHeight(false);
