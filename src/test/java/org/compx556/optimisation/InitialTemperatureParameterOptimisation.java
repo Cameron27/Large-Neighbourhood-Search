@@ -19,7 +19,7 @@ public class InitialTemperatureParameterOptimisation {
     @Test
     public void InitialTemperatureParameterOptimisationTest() throws IOException, DataFormatException {
         // values to test
-        double[] testValues = new double[]{0.05, 0.1, 0.2, 0.3, 0.4};
+        double[] testValues = new double[]{0.025, 0.05, 0.1, 0.2};
         // functions to test
         AcceptanceFunction[] testFunctions = new AcceptanceFunction[]{AcceptanceFunctions.recordToRecord,
                 AcceptanceFunctions.simulatedAnnealing};

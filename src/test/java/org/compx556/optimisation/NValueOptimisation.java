@@ -17,7 +17,7 @@ public class NValueOptimisation {
     @Test
     public void NValueOptimisationTest() throws IOException, DataFormatException {
         // values to test
-        double[] testValues = new double[]{0.05, 0.1, 0.15, 0.2, 0.25, 0.3};
+        double[] testValues = new double[]{0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.15, 0.2};
         // datasets to test on
         String[] testFiles = new String[]{"/m1a.csv", "/m2c.csv", "/m3d.csv"};
         // runtime for each dataset
