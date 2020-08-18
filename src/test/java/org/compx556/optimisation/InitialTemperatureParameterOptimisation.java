@@ -21,7 +21,9 @@ public class InitialTemperatureParameterOptimisation {
         // values to test
         double[] testValues = new double[]{0.025, 0.05, 0.1, 0.2};
         // functions to test
-        AcceptanceFunction[] testFunctions = new AcceptanceFunction[]{AcceptanceFunctions.recordToRecord,
+        AcceptanceFunction[] testFunctions = new AcceptanceFunction[]{
+                AcceptanceFunctions.hillClimb,
+                AcceptanceFunctions.recordToRecord,
                 AcceptanceFunctions.simulatedAnnealing};
         // datasets to test on
         String[] testFiles = new String[]{"/m1a.csv", "/m2c.csv", "/m3d.csv"};
@@ -35,21 +37,35 @@ public class InitialTemperatureParameterOptimisation {
             // for each test function
             for (AcceptanceFunction testFunction : testFunctions) {
                 // for each test value
-                for (double testValue : testValues) {
+                if (testFunction != AcceptanceFunctions.hillClimb)
+                    for (double testValue : testValues) {
+                        // set seed
+                        GlobalRandom.setSeed((long) (testFile.hashCode() ^ Double.hashCode(testValue)));
+
+                        // set config
+                        Config config = RectanglePacker.defaultConfig.clone();
+                        config.initialTemperatureParameter = testValue;
+                        config.acceptanceFunction = testFunction;
+                        config.dataFile = new File(getClass().getResource(testFile).getFile());
+                        config.runtime = runtimes[i];
+
+                        // run tests
+                        RectanglePacker packer = new RectanglePacker(config);
+                        PerformanceTest.runTest(packer, testFile + " " + testFunction.getName() + " " + testValue);
+                    }
+                else {
                     // set seed
-                    GlobalRandom.setSeed((long) (testFile.hashCode() ^ Double.hashCode(testValue)));
+                    GlobalRandom.setSeed((long) (testFile.hashCode()));
 
                     // set config
                     Config config = RectanglePacker.defaultConfig.clone();
-                    config.initialTemperatureParameter = testValue;
                     config.acceptanceFunction = testFunction;
                     config.dataFile = new File(getClass().getResource(testFile).getFile());
                     config.runtime = runtimes[i];
 
                     // run tests
                     RectanglePacker packer = new RectanglePacker(config);
-                    PerformanceTest.runTest(packer, testFile + " " + testFunction.getName() + " " + testValue);
-
+                    PerformanceTest.runTest(packer, testFile + " " + testFunction.getName());
                 }
             }
         }
