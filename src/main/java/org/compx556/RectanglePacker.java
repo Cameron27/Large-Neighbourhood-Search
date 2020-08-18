@@ -25,7 +25,7 @@ public class RectanglePacker {
                     new int[]{1, 0},
                     new int[]{1, 1},
                     new int[]{1, 2}},
-            0.15,
+            0.04,
             0.1
     );
 
