@@ -52,6 +52,6 @@ public class PerformanceTest {
         int max = Arrays.stream(results).max().getAsInt();
         int min = Arrays.stream(results).min().getAsInt();
 
-        System.out.printf("average: %.2f\n\tmin: %d\n\tmax: %d\n", average, min, max);
+        System.out.printf("\taverage: %.2f\n\tmin: %d\n\tmax: %d\n", average, min, max);
     }
 }
