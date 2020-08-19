@@ -26,7 +26,7 @@ public class RectanglePacker {
                     new int[]{1, 1},
                     new int[]{1, 2}},
             0.04,
-            0.1
+            0.025
     );
 
     private final BoxList initialState;
@@ -59,7 +59,7 @@ public class RectanglePacker {
         threadCount = config.threadCount;
         outFile = config.outFile;
         printStats = config.printStats;
-        n = (int) (config.destructionProportion * initialState.size());
+        n = Math.max((int) (config.destructionProportion * initialState.size()), 1);
         initialTemperatureParameter = config.initialTemperatureParameter;
     }
 
