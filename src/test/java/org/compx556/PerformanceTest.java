@@ -17,7 +17,7 @@ public class PerformanceTest {
         // datasets to test on
         String[] testFiles = new String[]{"/m1a.csv", "/m2c.csv", "/m3d.csv"};
         // runtime for each dataset
-        int[] runtimes = new int[]{60000, 90000, 120000};
+        int[] runtimes = new int[]{300000, 300000, 300000};
 
         // for each file
         for (int i = 0; i < testFiles.length; i++) {
@@ -29,6 +29,7 @@ public class PerformanceTest {
             // set config
             Config config = RectanglePacker.defaultConfig.clone();
             config.dataFile = new File(getClass().getResource(testFile).getFile());
+            config.outFile = new File(testFile + i + ".png");
             config.runtime = runtimes[i];
 
             // run tests
