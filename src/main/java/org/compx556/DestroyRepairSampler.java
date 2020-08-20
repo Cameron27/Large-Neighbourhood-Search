@@ -89,7 +89,7 @@ public class DestroyRepairSampler {
      * @param threadCount the <code>threads</code> parameter for the repair function
      * @return the solution generated after applying the destroy and repair functions randomly selected.
      */
-    public BoxList apply(int index, BoxList current, int n, int threadCount) {
+    public Solution apply(int index, Solution current, int n, int threadCount) {
         // get functions
         int[] pair = destroyRepairPairs[index];
         DestructionFunction destructionFunction = destructionFunctions[pair[0]];

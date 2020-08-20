@@ -1,8 +1,8 @@
 package org.compx556.function;
 
-import org.compx556.Box;
-import org.compx556.BoxList;
+import org.compx556.Rectangle;
 import org.compx556.RectanglePacker;
+import org.compx556.Solution;
 import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import java.util.zip.DataFormatException;
 import static org.junit.Assert.assertEquals;
 
 public class DestructionFunctionsTest {
-    BoxList initialList;
+    Solution initialList;
 
     @Before
     public void setup() throws IOException, DataFormatException {
@@ -25,9 +25,9 @@ public class DestructionFunctionsTest {
 
     @Test
     public void randomLocationOptimumXTest() {
-        BoxList initialListBackup = initialList.deepClone();
+        Solution initialListBackup = initialList.deepClone();
 
-        Pair<BoxList, List<Box>> destroyedList = DestructionFunctions.randomNRemove.apply(initialList, 15);
+        Pair<Solution, List<Rectangle>> destroyedList = DestructionFunctions.randomNRemove.apply(initialList, 15);
 
         // check immutable
         assertEquals(initialList, initialListBackup);

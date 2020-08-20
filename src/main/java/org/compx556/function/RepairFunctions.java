@@ -1,7 +1,7 @@
 package org.compx556.function;
 
-import org.compx556.Box;
-import org.compx556.BoxList;
+import org.compx556.Rectangle;
+import org.compx556.Solution;
 import org.compx556.util.GlobalRandom;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 
 public class RepairFunctions {
     /**
-     * Inserts each <code>Box</code> object into a random location in the solution but will find the x value and
+     * Inserts each <code>Rectangle</code> object into a random location in the solution but will find the x value and
      * rotation for the mox that minimises the height of the solution. Insertions are performed in a random order in a
      * greedy fashion.
      */
@@ -30,21 +30,21 @@ public class RepairFunctions {
         }
 
         @Override
-        public BoxList applyPartial(Pair<BoxList, List<Box>> boxesPair, int threadCount) {
+        public Solution applyPartial(Pair<Solution, List<Rectangle>> rectanglesPair, int threadCount) {
             ExecutorService executor = null;
 
-            BoxList list = boxesPair.getValue0().clone();
-            List<Box> missing = new ArrayList<>(boxesPair.getValue1());
+            Solution list = rectanglesPair.getValue0().clone();
+            List<Rectangle> missing = new ArrayList<>(rectanglesPair.getValue1());
             Collections.shuffle(missing, GlobalRandom.getRnd());
 
-            for (Box box : missing) {
-                box = box.clone();
+            for (Rectangle rectangle : missing) {
+                rectangle = rectangle.clone();
 
                 // pick random location to insert
                 int insertionIndex = GlobalRandom.nextInt(list.size() + 1);
 
                 Triplet<Double, Integer, Integer> best;
-                int globalUpperBound = list.getObjectSize() - Math.min(box.getWidth(), box.getHeight()) + 1;
+                int globalUpperBound = list.getObjectSize() - Math.min(rectangle.getWidth(), rectangle.getHeight()) + 1;
 
                 // multi thread mode
                 if (threadCount > 1) {
@@ -53,7 +53,7 @@ public class RepairFunctions {
 
                     List<Callable<Triplet<Double, Integer, Integer>>> threadList = new ArrayList<>();
                     for (int i = 0; i < threadCount; i++) {
-                        threadList.add(randomLocationOptimumXThread(list, box, (int) (((float) i / threadCount) * globalUpperBound),
+                        threadList.add(randomLocationOptimumXThread(list, rectangle, (int) (((float) i / threadCount) * globalUpperBound),
                                 (int) (((float) (i + 1) / threadCount) * globalUpperBound), insertionIndex));
                     }
 
@@ -79,7 +79,7 @@ public class RepairFunctions {
                 // single thread mode
                 else {
                     try {
-                        best = randomLocationOptimumXThread(list, box, 0, globalUpperBound, insertionIndex).call();
+                        best = randomLocationOptimumXThread(list, rectangle, 0, globalUpperBound, insertionIndex).call();
                     } catch (Exception e) {
                         throw new RuntimeException("Error in randomLocationOptimumX single thread.");
                     }
@@ -89,7 +89,7 @@ public class RepairFunctions {
                 int bestRotation = best.getValue1();
 
                 // set to best x
-                list.add(insertionIndex, box);
+                list.add(insertionIndex, rectangle);
                 list.get(insertionIndex).setXStart(bestX);
                 // if second rotation is best, rotate
                 if (bestRotation == 1) list.get(insertionIndex).rotate();
@@ -101,37 +101,37 @@ public class RepairFunctions {
         }
 
         /**
-         * Created a <code>Callable</code> to use as a thread that finds the best location for a <code>Box</code> to be
+         * Created a <code>Callable</code> to use as a thread that finds the best location for a <code>Rectangle</code> to be
          * inserted into a partial solution at a specific index for a subset of valid x locations.
          *
-         * @param boxList        current partial solution
-         * @param boxToAdd       <code>Box</code> to insert
+         * @param solution        current partial solution
+         * @param rectangleToAdd       <code>Rectangle</code> to insert
          * @param lowerBound     lower bound of x values to check (inclusive)
          * @param upperBound     upper bound of x values to check (exclusive)
-         * @param insertionIndex index to insert box into
+         * @param insertionIndex index to insert rectangle into
          * @return a <code>Quartet</code> containing:
          * <ul>
          * <li>the height of the best solution found</li>
-         * <li>index of the <code>Box</code> for the best solution found</li>
-         * <li>the rotation of the <code>Box</code> for the best solution found</li>
-         * <li>the x location of the <code>Box</code> for the best solution found</li>
+         * <li>index of the <code>Rectangle</code> for the best solution found</li>
+         * <li>the rotation of the <code>Rectangle</code> for the best solution found</li>
+         * <li>the x location of the <code>Rectangle</code> for the best solution found</li>
          * </ul>
          */
-        private Callable<Triplet<Double, Integer, Integer>> randomLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound, int insertionIndex) {
+        private Callable<Triplet<Double, Integer, Integer>> randomLocationOptimumXThread(Solution solution, Rectangle rectangleToAdd, int lowerBound, int upperBound, int insertionIndex) {
             // clones objects so each thread has a copy
-            final BoxList list = boxList.clone();
-            final Box box = boxToAdd.clone();
+            final Solution list = solution.clone();
+            final Rectangle rectangle = rectangleToAdd.clone();
 
             return () -> {
                 double bestScore = Double.POSITIVE_INFINITY;
                 int bestX = 0;
                 int bestRotation = 0;
-                list.add(insertionIndex, box);
+                list.add(insertionIndex, rectangle);
 
                 // for both rotations
                 for (int rotation = 0; rotation < 2; rotation++) {
                     //for each valid x location
-                    for (int x = lowerBound; x < Math.min(upperBound, list.getObjectSize() - box.getWidth() + 1); x++) {
+                    for (int x = lowerBound; x < Math.min(upperBound, list.getObjectSize() - rectangle.getWidth() + 1); x++) {
                         // move x location
                         list.get(insertionIndex).setXStart(x);
 
@@ -164,15 +164,15 @@ public class RepairFunctions {
         }
 
         @Override
-        public BoxList applyPartial(Pair<BoxList, List<Box>> boxesPair, int threadCount) {
+        public Solution applyPartial(Pair<Solution, List<Rectangle>> rectanglesPair, int threadCount) {
             ExecutorService executor = null;
 
-            BoxList list = boxesPair.getValue0().clone();
-            List<Box> missing = new ArrayList<>(boxesPair.getValue1());
+            Solution list = rectanglesPair.getValue0().clone();
+            List<Rectangle> missing = new ArrayList<>(rectanglesPair.getValue1());
             Collections.shuffle(missing, GlobalRandom.getRnd());
 
-            for (Box box : missing) {
-                box = box.clone();
+            for (Rectangle rectangle : missing) {
+                rectangle = rectangle.clone();
 
                 Quartet<Double, Integer, Integer, Integer> best;
                 int globalUpperBound = list.size() + 1;
@@ -184,7 +184,7 @@ public class RepairFunctions {
 
                     List<Callable<Quartet<Double, Integer, Integer, Integer>>> threadList = new ArrayList<>();
                     for (int i = 0; i < threadCount; i++) {
-                        threadList.add(optimumLocationOptimumXThread(list, box, (int) (((float) i / threadCount) * globalUpperBound),
+                        threadList.add(optimumLocationOptimumXThread(list, rectangle, (int) (((float) i / threadCount) * globalUpperBound),
                                 (int) (((float) (i + 1) / threadCount) * globalUpperBound)));
                     }
 
@@ -211,7 +211,7 @@ public class RepairFunctions {
                 else {
                     // create single callable for whole range and run it
                     try {
-                        best = optimumLocationOptimumXThread(list, box, 0, globalUpperBound).call();
+                        best = optimumLocationOptimumXThread(list, rectangle, 0, globalUpperBound).call();
                     } catch (Exception e) {
                         throw new RuntimeException("Error in randomLocationOptimumX single thread.");
                     }
@@ -222,7 +222,7 @@ public class RepairFunctions {
                 int bestIndex = best.getValue1();
 
                 // set to best x
-                list.add(bestIndex, box);
+                list.add(bestIndex, rectangle);
                 list.get(bestIndex).setXStart(bestX);
                 // if second rotation is best, rotate
                 if (bestRotation == 1) list.get(bestIndex).rotate();
@@ -234,25 +234,25 @@ public class RepairFunctions {
         }
 
         /**
-         * Created a <code>Callable</code> to use as a thread that finds the best location for a <code>Box</code> to be
+         * Created a <code>Callable</code> to use as a thread that finds the best location for a <code>Rectangle</code> to be
          * inserted into for a subset of indices.
          *
-         * @param boxList    current partial solution
-         * @param boxToAdd   <code>Box</code> to insert
+         * @param solution    current partial solution
+         * @param rectangleToAdd   <code>Rectangle</code> to insert
          * @param lowerBound lower bound of indices to check (inclusive)
          * @param upperBound upper bound of indices to check (exclusive)
          * @return a <code>Quartet</code> containing:
          * <ul>
          * <li>the height of the best solution found</li>
-         * <li>index of the <code>Box</code> for the best solution found</li>
-         * <li>the rotation of the <code>Box</code> for the best solution found</li>
-         * <li>the x location of the <code>Box</code> for the best solution found</li>
+         * <li>index of the <code>Rectangle</code> for the best solution found</li>
+         * <li>the rotation of the <code>Rectangle</code> for the best solution found</li>
+         * <li>the x location of the <code>Rectangle</code> for the best solution found</li>
          * </ul>
          */
-        private Callable<Quartet<Double, Integer, Integer, Integer>> optimumLocationOptimumXThread(BoxList boxList, Box boxToAdd, int lowerBound, int upperBound) {
+        private Callable<Quartet<Double, Integer, Integer, Integer>> optimumLocationOptimumXThread(Solution solution, Rectangle rectangleToAdd, int lowerBound, int upperBound) {
             // clones objects so each thread has a copy
-            final BoxList list = boxList.clone();
-            final Box box = boxToAdd.clone();
+            final Solution list = solution.clone();
+            final Rectangle rectangle = rectangleToAdd.clone();
 
             return () -> {
                 double bestScore = Double.POSITIVE_INFINITY;
@@ -262,12 +262,12 @@ public class RepairFunctions {
 
                 // for every location
                 for (int insertionIndex = lowerBound; insertionIndex < upperBound; insertionIndex++) {
-                    list.add(insertionIndex, box);
+                    list.add(insertionIndex, rectangle);
 
                     // for both rotations
                     for (int rotation = 0; rotation < 2; rotation++) {
                         //for each valid x location
-                        for (int x = 0; x <= list.getObjectSize() - box.getWidth(); x++) {
+                        for (int x = 0; x <= list.getObjectSize() - rectangle.getWidth(); x++) {
                             // move x location
                             list.get(insertionIndex).setXStart(x);
 
@@ -293,8 +293,8 @@ public class RepairFunctions {
     };
 
     /**
-     * Inserts all <code>Box</code> objects as a contiguous set into the best position to minimises the height of the
-     * solution. The x values, rotation and order of the <code>Box</code> objects will not be changed
+     * Inserts all <code>Rectangle</code> objects as a contiguous set into the best position to minimises the height of the
+     * solution. The x values, rotation and order of the <code>Rectangle</code> objects will not be changed
      */
     public static RepairFunction optimumBlockLocation = new RepairFunction() {
         @Override
@@ -303,18 +303,17 @@ public class RepairFunctions {
         }
 
         @Override
-        protected BoxList applyPartial(Pair<BoxList, List<Box>> boxesPair, int threadCount) {
-            BoxList list = boxesPair.getValue0().clone();
-            List<Box> missing = new ArrayList<>(boxesPair.getValue1());
-            BoxList temp = list.clone();
+        protected Solution applyPartial(Pair<Solution, List<Rectangle>> rectanglesPair, int threadCount) {
+            Solution list = rectanglesPair.getValue0().clone();
+            List<Rectangle> missing = new ArrayList<>(rectanglesPair.getValue1());
 
             double bestHeight = Double.POSITIVE_INFINITY;
             int bestIndex = 0;
             for (int startIndex = 0; startIndex <= list.size(); startIndex++) {
                 for (int i = 0; i < missing.size(); i++) {
-                    Box box = missing.get(i);
+                    Rectangle rectangle = missing.get(i);
 
-                    list.add(startIndex + i, box);
+                    list.add(startIndex + i, rectangle);
                 }
 
                 double height = list.calculateHeight(true);
@@ -329,9 +328,9 @@ public class RepairFunctions {
             }
 
             for (int i = 0; i < missing.size(); i++) {
-                Box box = missing.get(i);
+                Rectangle rectangle = missing.get(i);
 
-                list.add(bestIndex + i, box);
+                list.add(bestIndex + i, rectangle);
             }
 
             return list;

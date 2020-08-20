@@ -9,6 +9,9 @@ import java.io.*;
 import java.util.zip.DataFormatException;
 
 public class RectanglePacker {
+    /**
+     * Default configuration.
+     */
     public static Config defaultConfig = new Config(
             AcceptanceFunctions.recordToRecord,
             InitialisationFunctions.greedy,
@@ -29,19 +32,73 @@ public class RectanglePacker {
             0.025
     );
 
-    private final BoxList initialState;
+    /**
+     * Initial solution.
+     */
+    private final Solution initialState;
+
+    /**
+     * Acceptance function to use.
+     */
     private final AcceptanceFunction acceptanceFunction;
+
+    /**
+     * Initialisation function to use.
+     */
     private final InitialisationFunction initialisationFunction;
+
+    /**
+     * Destruction functions available to use.
+     */
     private final DestructionFunction[] destructionFunctions;
+
+    /**
+     * Repair functions available to use.
+     */
     private final RepairFunction[] repairFunctions;
+
+    /**
+     * Valid pairs of destruction and repair functions.
+     */
     private final int[][] destroyRepairPairs;
+
+    /**
+     * Time to search for solutions.
+     */
     private final long maxTime;
+
+    /**
+     * Thread count to use in repair functions.
+     */
     private final int threadCount;
+
+    /**
+     * Name of file to save results to.
+     */
     private final File outFile;
+
+    /**
+     * Whether or not stats should be printed.
+     */
     private final boolean printStats;
+
+    /**
+     * Number of rectangles to be remove by destruction functions.
+     */
     private final int n;
+
+    /**
+     * Parameter used to set initial temperature.
+     */
     private final double initialTemperatureParameter;
 
+    /**
+     * Create a <code>RectanglePacker</code> object.
+     *
+     * @param config config to use
+     * @throws IOException         if there is an error reading from the file
+     * @throws DataFormatException if there is an error in the format of the data
+     */
     public RectanglePacker(Config config) throws IOException, DataFormatException {
         // load data
         initialState = parseDataFile(config.dataFile);
@@ -61,12 +118,17 @@ public class RectanglePacker {
         initialTemperatureParameter = config.initialTemperatureParameter;
     }
 
+    /**
+     * Find a solution for the 2D rectangle packing problem.
+     *
+     * @return the height of the best solution found
+     */
     public int solve() {
         // reset destroy repair sampler
         DestroyRepairSampler destroyRepairSampler = new DestroyRepairSampler(destructionFunctions, repairFunctions, destroyRepairPairs);
 
-        BoxList current = initialisationFunction.apply(initialState);
-        BoxList best = current;
+        Solution current = initialisationFunction.apply(initialState);
+        Solution best = current;
         double currentHeight = current.calculateHeight(true);
         double bestHeight = currentHeight;
 
@@ -79,7 +141,7 @@ public class RectanglePacker {
         while (System.currentTimeMillis() - startTime < maxTime) {
             // get neighbour
             int index = destroyRepairSampler.sampleRandomIndex();
-            BoxList next = destroyRepairSampler.apply(index, current, n, threadCount);
+            Solution next = destroyRepairSampler.apply(index, current, n, threadCount);
             double nextHeight = next.calculateHeight(true);
 
             // check acceptance
@@ -120,42 +182,59 @@ public class RectanglePacker {
         return finalHeight;
     }
 
-    public static BoxList parseDataFile(File file) throws IOException, DataFormatException {
-        BoxList initialList = null;
+    /**
+     * Parse a file to generate a solution.
+     *
+     * @param file file to read
+     * @return solution generated from file
+     * @throws IOException         if there is an error reading from the file
+     * @throws DataFormatException if there is an error in the format of the data
+     */
+    public static Solution parseDataFile(File file) throws IOException, DataFormatException {
+        Solution initialList = null;
 
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
 
         String line = br.readLine();
-        boolean isBoxData = false;
+        boolean isRectangleData = false;
         int size = 0;
         int itemArea = 0;
 
         try {
+            // process one line at a time
             while (line != null) {
                 String[] data = line.split(",");
-                if (isBoxData) {
-                    int numBox = Integer.parseInt(data[0]);
-                    int xLocation = 0; // Placeholder
+                // read rectangle
+                if (isRectangleData) {
+                    int numRectangle = Integer.parseInt(data[0]);
+                    int xLocation = 0;
                     int width = Integer.parseInt(data[1]);
                     int height = Integer.parseInt(data[2]);
-                    Box inputBox = new Box(width, height, xLocation);
-                    initialList.add(inputBox);
+                    Rectangle inputRectangle = new Rectangle(width, height, xLocation);
+                    initialList.add(inputRectangle);
 
-                    if (numBox == size) {
-                        isBoxData = false;
+                    if (numRectangle == size) {
+                        isRectangleData = false;
                     }
                 } else {
+                    // read object width
                     if (line.contains("object width")) {
                         int objectWidth = Integer.parseInt(data[2]);
-                        initialList = new BoxList(objectWidth, (int) Math.ceil((double) itemArea / objectWidth));
-                    } else if (line.contains("item area")) {
+                        initialList = new Solution(objectWidth, (int) Math.ceil((double) itemArea / objectWidth));
+                    }
+                    // read total rectangle area
+                    else if (line.contains("item area")) {
                         itemArea = Integer.parseInt(data[2]);
-                    } else if (line.contains("width")) {
-                        isBoxData = true;
+                    }
+                    // identify when to start reading rectangles
+                    else if (line.contains("width")) {
+                        isRectangleData = true;
                         if (initialList == null)
                             throw new DataFormatException("Data is formatted incorrectly.");
-                    } else if (line.contains("size")) {
+                    }
+                    // read number of rectangles
+                    else if (line.contains("size")) {
                         size = Integer.parseInt(data[2]);
                     }
                 }

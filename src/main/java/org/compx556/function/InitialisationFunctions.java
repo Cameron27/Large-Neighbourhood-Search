@@ -1,7 +1,7 @@
 package org.compx556.function;
 
-import org.compx556.Box;
-import org.compx556.BoxList;
+import org.compx556.Rectangle;
+import org.compx556.Solution;
 import org.compx556.util.GlobalRandom;
 import org.javatuples.Pair;
 
@@ -11,7 +11,8 @@ import java.util.List;
 
 public class InitialisationFunctions {
     /**
-     * Randomises the order of the <code>Box</code> objects and sets every <code>Box</code> to have a random x value and
+     * Randomises the order of the <code>Rectangle</code> objects and sets every <code>Rectangle</code> to have a random x value and
+     * Randomises the order of the <code>Rectangle</code> objects and sets every <code>Rectangle</code> to have a random x value and
      * rotation.
      */
     public static final InitialisationFunction random = new InitialisationFunction() {
@@ -21,16 +22,16 @@ public class InitialisationFunctions {
         }
 
         @Override
-        public BoxList apply(BoxList solution) {
+        public Solution apply(Solution solution) {
             // create new list with random order
-            BoxList output = solution.clone();
+            Solution output = solution.clone();
             Collections.shuffle(output);
 
-            // rotate boxes randomly
+            // rotate rectangle randomly
             for (int i = 0; i < output.size(); i++) {
-                Box b = solution.get(i).clone();
+                Rectangle b = solution.get(i).clone();
                 if (GlobalRandom.nextBoolean()) {
-                    // clone box if it is going to be rotated
+                    // clone rectangel if it is going to be rotated
                     b.rotate();
                 }
                 b.setXStart(GlobalRandom.nextInt(solution.getObjectSize() - b.getWidth() + 1));
@@ -43,7 +44,7 @@ public class InitialisationFunctions {
     };
 
     /**
-     * Inserts each <code>Box</code> element into the solution using the <code>optimumLocationOptimumX</code> repair
+     * Inserts each <code>Rectangle</code> element into the solution using the <code>optimumLocationOptimumX</code> repair
      * function.
      */
     public static final InitialisationFunction greedy = new InitialisationFunction() {
@@ -53,10 +54,10 @@ public class InitialisationFunctions {
         }
 
         @Override
-        public BoxList apply(BoxList solution) {
-            BoxList output = solution.clone();
+        public Solution apply(Solution solution) {
+            Solution output = solution.clone();
             output.clear();
-            List<Box> missing = new ArrayList<>(solution);
+            List<Rectangle> missing = new ArrayList<>(solution);
 
             return RepairFunctions.optimumLocationOptimumX.apply(new Pair<>(output, missing), 1);
         }

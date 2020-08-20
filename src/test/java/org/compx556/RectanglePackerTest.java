@@ -22,14 +22,14 @@ public class RectanglePackerTest {
     @Test
     public void parseDataFileTest() throws IOException, DataFormatException {
         String m1aVerySmall = this.getClass().getResource("/m1a_very_small.csv").getFile();
-        BoxList m1aVerySmallList = RectanglePacker.parseDataFile(new File(m1aVerySmall));
+        Solution m1aVerySmallList = RectanglePacker.parseDataFile(new File(m1aVerySmall));
 
-        BoxList m1aVerySmallListExplicit = new BoxList(15, 144);
-        m1aVerySmallListExplicit.add(new Box(1, 6, 0));
-        m1aVerySmallListExplicit.add(new Box(2, 8, 0));
-        m1aVerySmallListExplicit.add(new Box(6, 5, 0));
-        m1aVerySmallListExplicit.add(new Box(4, 9, 0));
-        m1aVerySmallListExplicit.add(new Box(8, 7, 0));
+        Solution m1aVerySmallListExplicit = new Solution(15, 144);
+        m1aVerySmallListExplicit.add(new Rectangle(1, 6, 0));
+        m1aVerySmallListExplicit.add(new Rectangle(2, 8, 0));
+        m1aVerySmallListExplicit.add(new Rectangle(6, 5, 0));
+        m1aVerySmallListExplicit.add(new Rectangle(4, 9, 0));
+        m1aVerySmallListExplicit.add(new Rectangle(8, 7, 0));
 
         assertEquals(m1aVerySmallList, m1aVerySmallListExplicit);
 

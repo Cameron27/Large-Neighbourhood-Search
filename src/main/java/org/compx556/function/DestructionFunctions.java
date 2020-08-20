@@ -1,7 +1,7 @@
 package org.compx556.function;
 
-import org.compx556.Box;
-import org.compx556.BoxList;
+import org.compx556.Rectangle;
+import org.compx556.Solution;
 import org.compx556.util.GlobalRandom;
 import org.javatuples.Pair;
 
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DestructionFunctions {
     /**
-     * Removes a number of <code>Box</code> objects randomly from the solution.
+     * Removes a number of <code>Rectangle</code> objects randomly from the solution.
      */
     public static final DestructionFunction randomNRemove = new DestructionFunction() {
         @Override
@@ -19,12 +19,12 @@ public class DestructionFunctions {
         }
 
         @Override
-        public Pair<BoxList, List<Box>> apply(BoxList solution, int n) {
+        public Pair<Solution, List<Rectangle>> apply(Solution solution, int n) {
             // create new lists
-            BoxList remaining = solution.clone();
-            List<Box> removed = new ArrayList<>();
+            Solution remaining = solution.clone();
+            List<Rectangle> removed = new ArrayList<>();
 
-            // randomly remove n boxes
+            // randomly remove n rectangles
             for (int i = 0; i < n; i++) {
                 removed.add(remaining.remove(GlobalRandom.nextInt(remaining.size())));
             }
@@ -34,7 +34,7 @@ public class DestructionFunctions {
     };
 
     /**
-     * Removes a contiguous set of <code>Box</code> objects from the solution.
+     * Removes a contiguous set of <code>Rectangle</code> objects from the solution.
      */
     public static final DestructionFunction blockNRemove = new DestructionFunction() {
         @Override
@@ -43,14 +43,14 @@ public class DestructionFunctions {
         }
 
         @Override
-        public Pair<BoxList, List<Box>> apply(BoxList solution, int n) {
+        public Pair<Solution, List<Rectangle>> apply(Solution solution, int n) {
             // create new lists
-            BoxList remaining = solution.clone();
-            List<Box> removed = new ArrayList<>();
+            Solution remaining = solution.clone();
+            List<Rectangle> removed = new ArrayList<>();
 
             int removeIndex = GlobalRandom.nextInt(remaining.size() - n + 1);
 
-            // randomly remove n boxes
+            // randomly remove n rectangles
             for (int i = 0; i < n; i++) {
                 removed.add(remaining.remove(removeIndex));
             }
