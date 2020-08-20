@@ -33,7 +33,7 @@ public class InitialisationFunctions {
             for (int i = 0; i < output.size(); i++) {
                 Rectangle b = solution.get(i).clone();
                 if (GlobalRandom.nextBoolean()) {
-                    // clone rectangel if it is going to be rotated
+                    // clone rectangle if it is going to be rotated
                     b.rotate();
                 }
                 b.setXStart(GlobalRandom.nextInt(solution.getObjectSize() - b.getWidth() + 1));
