@@ -42,8 +42,6 @@ public class RectanglePacker {
     private final int n;
     private final double initialTemperatureParameter;
 
-    private DestroyRepairSampler destroyRepairSampler;
-
     public RectanglePacker(Config config) throws IOException, DataFormatException {
         // load data
         initialState = parseDataFile(config.dataFile);
@@ -65,7 +63,7 @@ public class RectanglePacker {
 
     public int solve() {
         // reset destroy repair sampler
-        destroyRepairSampler = new DestroyRepairSampler(destructionFunctions, repairFunctions, destroyRepairPairs);
+        DestroyRepairSampler destroyRepairSampler = new DestroyRepairSampler(destructionFunctions, repairFunctions, destroyRepairPairs);
 
         BoxList current = initialisationFunction.apply(initialState);
         BoxList best = current;
