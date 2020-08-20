@@ -64,7 +64,7 @@ public class Config implements Cloneable {
     /**
      * Seed to use for randomisation.
      */
-    @Parameter(names = {"-s", "-seed"}, description = "Seed to use for randomness")
+    @Parameter(names = {"-s", "-seed"}, hidden = true, description = "Seed to use for randomness")
     public Long seed;
 
     /**
